@@ -240,13 +240,14 @@
     <button onclick="saveAccountChanges()">Save Changes</button>
   </div>
 
-<script>
+  <script>
   const defaultUsers = {
     asser: { password: "asser2025", credits: 1000, days: 30 },
     layan: { password: "layan999", credits: 1200, days: 25 },
-    zezo: { password: "zezo2013", credits: 1500, days: 20 }
+    zezo: { password: "zezo2023", credits: 1500, days: 20 }
   };
 
+  // Load users from localStorage or fallback to default
   let users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
   let currentUser = null;
 
@@ -255,7 +256,7 @@
   }
 
   function checkLogin() {
-    const user = document.getElementById("username").value.trim().toLowerCase();
+    const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
 
     if (users[user] && users[user].password === pass) {
@@ -271,27 +272,27 @@
       document.getElementById("infoCredits").innerText = users[user].credits;
       document.getElementById("infoDays").innerText = users[user].days;
 
-      showEditForm(user);
+      if (user === "zezo") {
+        showEditForm();
+      }
     } else {
       alert("Invalid username or password.");
     }
   }
 
-  function showEditForm(user) {
-    const editBox = document.getElementById("editAccount");
-    const editCredits = document.getElementById("editCredits");
-    const editDays = document.getElementById("editDays");
-    const editUserSelect = document.getElementById("editUserSelect");
+  function showEditForm() {
+    document.getElementById("editAccount").style.display = "block";
+  }
 
-    if (user !== "zezo") {
-      editUserSelect.style.display = "none";
-      editUserSelect.innerHTML = `<option value="${user}">${user}</option>`;
+  function loadUserDataToEdit() {
+    const selectedUser = document.getElementById("editUserSelect").value;
+    if (selectedUser && users[selectedUser]) {
+      document.getElementById("editCredits").value = users[selectedUser].credits;
+      document.getElementById("editDays").value = users[selectedUser].days;
+    } else {
+      document.getElementById("editCredits").value = "";
+      document.getElementById("editDays").value = "";
     }
-
-    editBox.style.display = "block";
-    editUserSelect.value = user;
-    editCredits.value = users[user].credits;
-    editDays.value = users[user].days;
   }
 
   function saveAccountChanges() {
@@ -309,16 +310,15 @@
 
     saveUsersToStorage();
 
+    // Update infoBox ONLY if edited user is the currently logged-in user
     if (currentUser === selectedUser) {
       document.getElementById("infoCredits").innerText = users[selectedUser].credits;
       document.getElementById("infoDays").innerText = users[selectedUser].days;
     }
 
-    alert("Your data was updated successfully.");
+    alert("User account updated successfully.");
   }
-</script>
-
-
+  </script>
 
 </body>
 </html>
