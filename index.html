@@ -241,102 +241,106 @@
   </div>
 
   <script>
-    const users = {
-      asser: { password: "asser2025", credits: 1000, days: 30 },
-      layan: { password: "layan999", credits: 1200, days: 25 },
-      zezo: { password: "zezo2023", credits: 1500, days: 20 }
-    };
+  const defaultUsers = {
+    asser: { password: "asser2025", credits: 1000, days: 30 },
+    layan: { password: "layan999", credits: 1200, days: 25 },
+    zezo: { password: "zezo2023", credits: 1500, days: 20 }
+  };
 
-    let currentUser = null;
+  // Load users from localStorage or fallback to default
+  let users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
+  let currentUser = null;
 
-    function checkLogin() {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
+  function saveUsersToStorage() {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
 
-      if (users[user] && users[user].password === pass) {
-        currentUser = user;
+  function checkLogin() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("reportForm").style.display = "block";
-        document.getElementById("counterBox").style.display = "block";
-        document.getElementById("welcomeBox").style.display = "block";
-        document.getElementById("infoBox").style.display = "block";
+    if (users[user] && users[user].password === pass) {
+      currentUser = user;
 
-        document.getElementById("userWelcome").innerText = user;
-        document.getElementById("infoCredits").innerText = users[user].credits;
-        document.getElementById("infoDays").innerText = users[user].days;
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("reportForm").style.display = "block";
+      document.getElementById("counterBox").style.display = "block";
+      document.getElementById("welcomeBox").style.display = "block";
+      document.getElementById("infoBox").style.display = "block";
 
-        if (user === "zezo") {
-          showEditForm();
-        }
+      document.getElementById("userWelcome").innerText = user;
+      document.getElementById("infoCredits").innerText = users[user].credits;
+      document.getElementById("infoDays").innerText = users[user].days;
 
-      } else {
-        alert("Invalid username or password.");
+      if (user === "zezo") {
+        showEditForm();
       }
+    } else {
+      alert("Invalid username or password.");
+    }
+  }
+
+  function showEditForm() {
+    document.getElementById("editAccount").style.display = "block";
+  }
+
+  function loadUserDataToEdit() {
+    const selectedUser = document.getElementById("editUserSelect").value;
+    if (selectedUser && users[selectedUser]) {
+      document.getElementById("editCredits").value = users[selectedUser].credits;
+      document.getElementById("editDays").value = users[selectedUser].days;
+
+      document.getElementById("infoCredits").innerText = users[selectedUser].credits;
+      document.getElementById("infoDays").innerText = users[selectedUser].days;
+    } else {
+      document.getElementById("editCredits").value = "";
+      document.getElementById("editDays").value = "";
+    }
+  }
+
+  function saveAccountChanges() {
+    const selectedUser = document.getElementById("editUserSelect").value;
+    const newCredits = parseInt(document.getElementById("editCredits").value);
+    const newDays = parseInt(document.getElementById("editDays").value);
+
+    if (!selectedUser || !users[selectedUser]) {
+      alert("Please select a valid user.");
+      return;
     }
 
-    function showEditForm() {
-      document.getElementById("editAccount").style.display = "block";
-    }
+    if (!isNaN(newCredits)) users[selectedUser].credits = newCredits;
+    if (!isNaN(newDays)) users[selectedUser].days = newDays;
 
-   function loadUserDataToEdit() {
-  const selectedUser = document.getElementById("editUserSelect").value;
-  if (selectedUser && users[selectedUser]) {
-    document.getElementById("editCredits").value = users[selectedUser].credits;
-    document.getElementById("editDays").value = users[selectedUser].days;
+    // Save to localStorage
+    saveUsersToStorage();
 
-    // Update infoBox to reflect the selected user
+    // Update infoBox
     document.getElementById("infoCredits").innerText = users[selectedUser].credits;
     document.getElementById("infoDays").innerText = users[selectedUser].days;
-  } else {
-    document.getElementById("editCredits").value = "";
-    document.getElementById("editDays").value = "";
-  }
-}
 
-
-    function saveAccountChanges() {
-  const selectedUser = document.getElementById("editUserSelect").value;
-  const newCredits = parseInt(document.getElementById("editCredits").value);
-  const newDays = parseInt(document.getElementById("editDays").value);
-
-  if (!selectedUser || !users[selectedUser]) {
-    alert("Please select a valid user.");
-    return;
+    alert("User account updated successfully!");
   }
 
-  if (!isNaN(newCredits)) users[selectedUser].credits = newCredits;
-  if (!isNaN(newDays)) users[selectedUser].days = newDays;
+  document.getElementById('reportForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
 
-  // If Zezo is editing his own account, update the infoBox
-  if (selectedUser === currentUser) {
-    document.getElementById("infoCredits").innerText = users[selectedUser].credits;
-    document.getElementById("infoDays").innerText = users[selectedUser].days;
-  }
-
-  alert("User account updated successfully!");
-}
-
-
-    document.getElementById('reportForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const form = e.target;
-
-      fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
-      }).then(response => {
-        if (response.ok) {
-          form.reset();
-          document.getElementById('form-success').style.display = 'block';
-        } else {
-          alert("Something went wrong. Please try again.");
-        }
-      }).catch(error => {
-        alert("Error sending form. Check your internet connection.");
-      });
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if (response.ok) {
+        form.reset();
+        document.getElementById('form-success').style.display = 'block';
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    }).catch(error => {
+      alert("Error sending form. Check your internet connection.");
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>
