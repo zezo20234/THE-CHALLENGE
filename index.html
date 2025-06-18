@@ -289,9 +289,6 @@
     if (selectedUser && users[selectedUser]) {
       document.getElementById("editCredits").value = users[selectedUser].credits;
       document.getElementById("editDays").value = users[selectedUser].days;
-
-      document.getElementById("infoCredits").innerText = users[selectedUser].credits;
-      document.getElementById("infoDays").innerText = users[selectedUser].days;
     } else {
       document.getElementById("editCredits").value = "";
       document.getElementById("editDays").value = "";
@@ -311,36 +308,17 @@
     if (!isNaN(newCredits)) users[selectedUser].credits = newCredits;
     if (!isNaN(newDays)) users[selectedUser].days = newDays;
 
-    // Save to localStorage
     saveUsersToStorage();
 
-    // Update infoBox
-    document.getElementById("infoCredits").innerText = users[selectedUser].credits;
-    document.getElementById("infoDays").innerText = users[selectedUser].days;
+    // Update infoBox ONLY if edited user is the currently logged-in user
+    if (currentUser === selectedUser) {
+      document.getElementById("infoCredits").innerText = users[selectedUser].credits;
+      document.getElementById("infoDays").innerText = users[selectedUser].days;
+    }
 
-    alert("User account updated successfully!");
+    alert("User account updated successfully.");
   }
-
-  document.getElementById('reportForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-
-    fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
-    }).then(response => {
-      if (response.ok) {
-        form.reset();
-        document.getElementById('form-success').style.display = 'block';
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
-    }).catch(error => {
-      alert("Error sending form. Check your internet connection.");
-    });
-  });
-</script>
+  </script>
 
 </body>
 </html>
