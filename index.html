@@ -279,16 +279,21 @@
       document.getElementById("editAccount").style.display = "block";
     }
 
-    function loadUserDataToEdit() {
-      const selectedUser = document.getElementById("editUserSelect").value;
-      if (selectedUser && users[selectedUser]) {
-        document.getElementById("editCredits").value = users[selectedUser].credits;
-        document.getElementById("editDays").value = users[selectedUser].days;
-      } else {
-        document.getElementById("editCredits").value = "";
-        document.getElementById("editDays").value = "";
-      }
-    }
+   function loadUserDataToEdit() {
+  const selectedUser = document.getElementById("editUserSelect").value;
+  if (selectedUser && users[selectedUser]) {
+    document.getElementById("editCredits").value = users[selectedUser].credits;
+    document.getElementById("editDays").value = users[selectedUser].days;
+
+    // Update infoBox to reflect the selected user
+    document.getElementById("infoCredits").innerText = users[selectedUser].credits;
+    document.getElementById("infoDays").innerText = users[selectedUser].days;
+  } else {
+    document.getElementById("editCredits").value = "";
+    document.getElementById("editDays").value = "";
+  }
+}
+
 
     function saveAccountChanges() {
   const selectedUser = document.getElementById("editUserSelect").value;
