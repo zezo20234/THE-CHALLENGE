@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CHALLENGE</title>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="green_red.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="green_red.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="modern.jpg" />
+  <link rel="icon" type="image/png" sizes="192x192" href="modern.jpg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -135,7 +135,6 @@
   animation: dropIn 0.5s ease forwards; /* slightly slower */
 }
 
-
   </style>
 </head>
 <body>
@@ -155,7 +154,6 @@
   </span>
 </h2>
 
-
     <input type="text" id="username" placeholder="Username" autocomplete="off" />
     <input type="password" id="password" placeholder="Password" autocomplete="off" />
     <button onclick="checkLogin()">Login</button>
@@ -164,7 +162,6 @@
 <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
   <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
 </div>
-
 
   <form id="reportForm" style="display:none;" action="https://formsubmit.co/zezo_z4ever@outlook.com" method="post">
     <input type="hidden" name="_captcha" value="false" />
@@ -203,33 +200,23 @@
     Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
   </div>
 
-
   <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
     <h1>Welcome back, <span id="userWelcome"></span>!</h1>
   </div>
   
-
   <div id="selfEditor" class="login-box" style="display:none;">
     <h3>Edit Your Own Account</h3>
     <label for="selfCredits">Credits:</label>
     <input type="number" id="selfCredits" placeholder="Update your credits" min="0" />
     <label for="selfDays">Days:</label>
     <input type="number" id="selfDays" placeholder="Update your days" min="0" />
+    
+    <!-- Added Challenge textarea -->
+    <label for="challengeText">Challenge:</label>
+    <textarea id="challengeText" placeholder="Enter challenge here..." rows="2"></textarea>
+    
     <button onclick="saveSelfChanges()">Save My Changes</button>
   </div>
-
-<footer>
-  <p>MADE BY ZEYAD AND CHATGPT</p>
-  <p>Version 
-    <span style="color: red; font-weight: bold; font-size: 1.5em;">2</span>
-    <span style="color: green; font-weight: bold; font-size: 1.5em;">8</span> 
-    | Made on 5/5/2025
-  </p>
-  <p>Game Partners: zezo games</p>
-</footer>
-
-
-
 
   <script type="module">
     // Import modular Firebase SDK functions
@@ -294,23 +281,22 @@
     };
 
     function showWelcome() {
-  const loginLockIcon = document.getElementById("loginLockIcon");
-  loginLockIcon.classList.add("open");
+      const loginLockIcon = document.getElementById("loginLockIcon");
+      loginLockIcon.classList.add("open");
 
-  setTimeout(() => {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("welcomeBox").style.display = "block";
-    animateWelcomeText(currentUser); // ← call animation here
+      setTimeout(() => {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("welcomeBox").style.display = "block";
+        animateWelcomeText(currentUser); // ← call animation here
 
-    document.getElementById("reportForm").style.display = "block";
-    document.getElementById("selfEditArea").style.display = "block";
+        document.getElementById("reportForm").style.display = "block";
+        document.getElementById("selfEditArea").style.display = "block";
 
-    document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
-    document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
-    document.getElementById("infoBox").style.display = "block";
-  }, 1000);
-}
-
+        document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
+        document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
+        document.getElementById("infoBox").style.display = "block";
+      }, 1000);
+    }
 
     // Secret code check for self edit unlock
     window.checkSecretCode = function() {
@@ -321,6 +307,15 @@
         // Pre-fill current credits/days
         document.getElementById("selfCredits").value = currentUserData.credits ?? 0;
         document.getElementById("selfDays").value = currentUserData.days ?? 0;
+        
+        // Load existing challenge from Firebase into textarea
+        get(ref(database, 'global/challenge')).then(snapshot => {
+          if (snapshot.exists()) {
+            document.getElementById("challengeText").value = snapshot.val();
+          } else {
+            document.getElementById("challengeText").value = "";
+          }
+        });
       } else {
         alert("Wrong secret code.");
       }
@@ -329,6 +324,7 @@
     window.saveSelfChanges = function() {
       const newCredits = parseInt(document.getElementById("selfCredits").value, 10);
       const newDays = parseInt(document.getElementById("selfDays").value, 10);
+      const challenge = document.getElementById("challengeText").value.trim();
 
       if (isNaN(newCredits) || isNaN(newDays)) {
         alert("Please enter valid numbers.");
@@ -346,58 +342,81 @@
       }).catch(err => {
         alert("Error saving data: " + err);
       });
+
+      if (challenge) {
+        set(ref(database, 'global/challenge'), challenge).catch(err => {
+          alert("Error saving challenge: " + err);
+        });
+      }
     };
 
     const welcomeBox = document.getElementById("welcomeBox");
-welcomeBox.classList.remove("fade-in");
-void welcomeBox.offsetWidth; // trigger reflow
-welcomeBox.classList.add("fade-in");
+    welcomeBox.classList.remove("fade-in");
+    void welcomeBox.offsetWidth; // trigger reflow
+    welcomeBox.classList.add("fade-in");
 
-setTimeout(() => {
-  infoBox.innerText = ""; // clear message
-  showLoggedInUI();
-  updateInfoBox();
-  listenForUserChanges();
+    setTimeout(() => {
+      infoBox.innerText = ""; // clear message
+      showLoggedInUI();
+      updateInfoBox();
+      listenForUserChanges();
 
-  const loginLockIcon = document.getElementById("loginLockIcon");
-  loginLockIcon.classList.add("open");
+      const loginLockIcon = document.getElementById("loginLockIcon");
+      loginLockIcon.classList.add("open");
 
-  // Add fade-in effect
-  const welcomeBox = document.getElementById("welcomeBox");
-  welcomeBox.classList.add("fade-in");
-}, 500); // or 1000, depending on your delay
+      // Add fade-in effect
+      const welcomeBox = document.getElementById("welcomeBox");
+      welcomeBox.classList.add("fade-in");
+    }, 500); // or 1000, depending on your delay
 
-function animateWelcomeText(name) {
-  const welcomeMessage = document.getElementById("welcomeMessage");
-  const userWelcome = document.getElementById("userWelcome");
+    // Listen to challenge updates to update footer live
+    onValue(ref(database, 'global/challenge'), snapshot => {
+      const val = snapshot.exists() ? snapshot.val() : "No challenge set.";
+      document.getElementById("footerChallenge").textContent = val;
+    });
 
-  welcomeMessage.innerHTML = "";
-  userWelcome.innerHTML = "";
+    function animateWelcomeText(name) {
+      const welcomeMessage = document.getElementById("welcomeMessage");
+      const userWelcome = document.getElementById("userWelcome");
 
-  const message = "Welcome back, ";
-  const delay = 0.12; // slower animation
+      welcomeMessage.innerHTML = "";
+      userWelcome.innerHTML = "";
 
-  // Animate "Welcome back, "
-  message.split("").forEach((char, i) => {
-    const span = document.createElement("span");
-    span.textContent = char;
-    span.className = "letter";
-    span.style.animationDelay = `${i * delay}s`;
-    welcomeMessage.appendChild(span);
-  });
+      const message = "Welcome back, ";
+      const delay = 0.12; // slower animation
 
-  // Animate username after message
-  name.split("").forEach((char, j) => {
-    const span = document.createElement("span");
-    span.textContent = char;
-    span.className = "letter";
-    span.style.animationDelay = `${(message.length + j) * delay}s`;
-    userWelcome.appendChild(span);
-  });
-}
+      // Animate "Welcome back, "
+      message.split("").forEach((char, i) => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        span.className = "letter";
+        span.style.animationDelay = `${i * delay}s`;
+        welcomeMessage.appendChild(span);
+      });
 
-
+      // Animate username after message
+      name.split("").forEach((char, j) => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        span.className = "letter";
+        span.style.animationDelay = `${(message.length + j) * delay}s`;
+        userWelcome.appendChild(span);
+      });
+    }
   </script>
+
+<footer>
+  <p>MADE BY ZEYAD AND CHATGPT</p>
+  <p>Version 
+    <span style="color: red; font-weight: bold; font-size: 1.5em;">2</span>
+    <span style="color: green; font-weight: bold; font-size: 1.5em;">8</span> 
+    <span style="color: red; font-weight: bold; font-size: 1.5em;">.5</span>
+    | Made on 5/5/2025
+  </p>
+  <p>Game Partners: zezo games</p>
+    <h1><strong>Challenge:</strong> <span id="footerChallenge">Loading...</h1>
+  </p>
+</footer>
 
 </body>
 </html>
