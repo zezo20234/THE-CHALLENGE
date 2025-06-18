@@ -244,7 +244,7 @@
   const defaultUsers = {
     asser: { password: "asser2025", credits: 1000, days: 30 },
     layan: { password: "layan999", credits: 1200, days: 25 },
-    zezo: { password: "zezo2023", credits: 1500, days: 20 }
+    zezo: { password: "zezo2013", credits: 1500, days: 20 }
   };
 
   let users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
@@ -283,7 +283,6 @@
     const editDays = document.getElementById("editDays");
     const editUserSelect = document.getElementById("editUserSelect");
 
-    // Hide user selector for regular users
     if (user !== "zezo") {
       editUserSelect.style.display = "none";
       editUserSelect.innerHTML = `<option value="${user}">${user}</option>`;
@@ -318,6 +317,7 @@
     alert("Your data was updated successfully.");
   }
 </script>
+
 
 
 </body>
