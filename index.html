@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js"></script>
+  <!-- Removed old script tags for firebase-app and firebase-database -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CHALLENGE</title>
@@ -69,16 +68,10 @@
       color: white;
     }
     footer {
-    max-width: 400px;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      margin: auto;
-      width: fit-content;
+      text-align: center;
+      margin-top: 40px;
+      font-weight: 700;
+      color: white;
     }
   </style>
 </head>
@@ -147,7 +140,11 @@
     <p>Game Partners: zezo games</p>
   </footer>
 
-  <script>
+  <script type="module">
+    // Import modular Firebase SDK functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
+    import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js";
+
     // Default users with passwords (you can add more)
     const defaultUsers = {
       asser: { password: "asser2025" },
@@ -155,27 +152,27 @@
       zezo: { password: "zezo2023" }
     };
 
-    // Firebase config - REPLACE with your Firebase project credentials:
-   const firebaseConfig = {
-  apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
-  authDomain: "the-challenge-fa9b2.firebaseapp.com",
-  databaseURL: "https://the-challenge-fa9b2-default-rtdb.firebaseio.com",
-  projectId: "the-challenge-fa9b2",
-  storageBucket: "the-challenge-fa9b2.firebasestorage.app",
-  messagingSenderId: "4102830619",
-  appId: "1:4102830619:web:581e033f36ec02708916be",
-  measurementId: "G-7M7JLK1V86"
-};
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
+      authDomain: "the-challenge-fa9b2.firebaseapp.com",
+      databaseURL: "https://the-challenge-fa9b2-default-rtdb.firebaseio.com",
+      projectId: "the-challenge-fa9b2",
+      storageBucket: "the-challenge-fa9b2.appspot.com",
+      messagingSenderId: "4102830619",
+      appId: "1:4102830619:web:581e033f36ec02708916be",
+      measurementId: "G-7M7JLK1V86"
+    };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
     let currentUser = null;
     let currentUserData = null;
 
     // Login function
-    function checkLogin() {
+    window.checkLogin = function() {
       const user = document.getElementById("username").value.trim();
       const pass = document.getElementById("password").value.trim();
 
@@ -190,14 +187,15 @@
 
       currentUser = user;
 
+      const userRef = ref(database, 'users/' + currentUser);
+
       // Load user data from Firebase or initialize if missing
-      firebase.database().ref('users/' + currentUser).get().then(snapshot => {
+      get(userRef).then(snapshot => {
         if (snapshot.exists()) {
           currentUserData = snapshot.val();
         } else {
-          // If no data exists for this user, initialize default credits/days
           currentUserData = { credits: 1000, days: 30 };
-          firebase.database().ref('users/' + currentUser).set(currentUserData);
+          set(userRef, currentUserData);
         }
 
         // Update UI after data load
@@ -208,7 +206,7 @@
       }).catch(error => {
         alert("Failed to load user data: " + error.message);
       });
-    }
+    };
 
     // Show UI after login
     function showLoggedInUI() {
@@ -228,12 +226,12 @@
 
     // Listen for realtime changes on this user's data and update UI instantly
     function listenForUserChanges() {
-      firebase.database().ref('users/' + currentUser).on('value', snapshot => {
+      const userRef = ref(database, 'users/' + currentUser);
+      onValue(userRef, snapshot => {
         if (snapshot.exists()) {
           currentUserData = snapshot.val();
           updateInfoBox();
 
-          // Also update the editor fields if open
           if (document.getElementById("selfEditor").style.display === "block") {
             document.getElementById("selfCredits").value = currentUserData.credits;
             document.getElementById("selfDays").value = currentUserData.days;
@@ -243,7 +241,7 @@
     }
 
     // Secret code check to unlock editor
-    function checkSecretCode() {
+    window.checkSecretCode = function() {
       const code = document.getElementById("secretCodeInput").value.trim();
       if (code === "11223344") {
         document.getElementById("selfEditor").style.display = "block";
@@ -252,10 +250,10 @@
       } else {
         alert("❌ Invalid code.");
       }
-    }
+    };
 
     // Save changes to Firebase when user edits credits or days
-    function saveSelfChanges() {
+    window.saveSelfChanges = function() {
       const newCredits = parseInt(document.getElementById("selfCredits").value);
       const newDays = parseInt(document.getElementById("selfDays").value);
 
@@ -268,8 +266,9 @@
         return;
       }
 
-      // Update Firebase
-      firebase.database().ref('users/' + currentUser).update({
+      const userRef = ref(database, 'users/' + currentUser);
+
+      update(userRef, {
         credits: newCredits,
         days: newDays
       }).then(() => {
@@ -277,7 +276,7 @@
       }).catch(error => {
         alert("Failed to save data: " + error.message);
       });
-    }
+    };
   </script>
 </body>
 </html>
