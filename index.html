@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CHALLENGE</title>
@@ -140,53 +142,98 @@
   </footer>
 
   <script>
-    // Default user data
+    // Default users with passwords (you can add more)
     const defaultUsers = {
-      asser: { password: "asser2025", credits: 1000, days: 30 },
-      layan: { password: "layan999", credits: 1200, days: 25 },
-      zezo: { password: "zezo2023", credits: 1500, days: 20 }
+      asser: { password: "asser2025" },
+      layan: { password: "layan999" },
+      zezo: { password: "zezo2023" }
     };
 
-    // Load users from localStorage or fallback to default
-    let users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
-    let currentUser = null;
+    // Firebase config - REPLACE with your Firebase project credentials:
+   const firebaseConfig = {
+  apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
+  authDomain: "the-challenge-fa9b2.firebaseapp.com",
+  databaseURL: "https://the-challenge-fa9b2-default-rtdb.firebaseio.com",
+  projectId: "the-challenge-fa9b2",
+  storageBucket: "the-challenge-fa9b2.firebasestorage.app",
+  messagingSenderId: "4102830619",
+  appId: "1:4102830619:web:581e033f36ec02708916be",
+  measurementId: "G-7M7JLK1V86"
+};
 
-    // Save users data back to localStorage
-    function saveUsersToStorage() {
-      localStorage.setItem("users", JSON.stringify(users));
-    }
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let currentUser = null;
+    let currentUserData = null;
 
     // Login function
     function checkLogin() {
       const user = document.getElementById("username").value.trim();
       const pass = document.getElementById("password").value.trim();
-      if (users[user] && users[user].password === pass) {
-        currentUser = user;
 
-        // Show/hide relevant UI parts
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("reportForm").style.display = "block";
-        document.getElementById("welcomeBox").style.display = "block";
-        document.getElementById("infoBox").style.display = "block";
-        document.getElementById("selfEditArea").style.display = "block";
-
-        // Show welcome message
-        document.getElementById("userWelcome").innerText = user;
-
-        // Show current credits/days
-        updateInfoBox();
-
-      } else {
-        alert("Invalid username or password.");
+      if (!defaultUsers[user]) {
+        alert("User not found.");
+        return;
       }
+      if (defaultUsers[user].password !== pass) {
+        alert("Invalid password.");
+        return;
+      }
+
+      currentUser = user;
+
+      // Load user data from Firebase or initialize if missing
+      firebase.database().ref('users/' + currentUser).get().then(snapshot => {
+        if (snapshot.exists()) {
+          currentUserData = snapshot.val();
+        } else {
+          // If no data exists for this user, initialize default credits/days
+          currentUserData = { credits: 1000, days: 30 };
+          firebase.database().ref('users/' + currentUser).set(currentUserData);
+        }
+
+        // Update UI after data load
+        showLoggedInUI();
+        updateInfoBox();
+        listenForUserChanges();
+
+      }).catch(error => {
+        alert("Failed to load user data: " + error.message);
+      });
     }
 
-    // Update the info box with current user's credits and days
+    // Show UI after login
+    function showLoggedInUI() {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("reportForm").style.display = "block";
+      document.getElementById("welcomeBox").style.display = "block";
+      document.getElementById("infoBox").style.display = "block";
+      document.getElementById("selfEditArea").style.display = "block";
+      document.getElementById("userWelcome").innerText = currentUser;
+    }
+
+    // Update info box with current data
     function updateInfoBox() {
-      if (currentUser && users[currentUser]) {
-        document.getElementById("infoCredits").innerText = users[currentUser].credits;
-        document.getElementById("infoDays").innerText = users[currentUser].days;
-      }
+      document.getElementById("infoCredits").innerText = currentUserData.credits ?? 0;
+      document.getElementById("infoDays").innerText = currentUserData.days ?? 0;
+    }
+
+    // Listen for realtime changes on this user's data and update UI instantly
+    function listenForUserChanges() {
+      firebase.database().ref('users/' + currentUser).on('value', snapshot => {
+        if (snapshot.exists()) {
+          currentUserData = snapshot.val();
+          updateInfoBox();
+
+          // Also update the editor fields if open
+          if (document.getElementById("selfEditor").style.display === "block") {
+            document.getElementById("selfCredits").value = currentUserData.credits;
+            document.getElementById("selfDays").value = currentUserData.days;
+          }
+        }
+      });
     }
 
     // Secret code check to unlock editor
@@ -194,15 +241,14 @@
       const code = document.getElementById("secretCodeInput").value.trim();
       if (code === "11223344") {
         document.getElementById("selfEditor").style.display = "block";
-        // Fill current values in inputs
-        document.getElementById("selfCredits").value = users[currentUser].credits;
-        document.getElementById("selfDays").value = users[currentUser].days;
+        document.getElementById("selfCredits").value = currentUserData.credits;
+        document.getElementById("selfDays").value = currentUserData.days;
       } else {
         alert("❌ Invalid code.");
       }
     }
 
-    // Save user's changes from editor and update localStorage
+    // Save changes to Firebase when user edits credits or days
     function saveSelfChanges() {
       const newCredits = parseInt(document.getElementById("selfCredits").value);
       const newDays = parseInt(document.getElementById("selfDays").value);
@@ -216,12 +262,15 @@
         return;
       }
 
-      users[currentUser].credits = newCredits;
-      users[currentUser].days = newDays;
-
-      saveUsersToStorage();
-      updateInfoBox();
-      alert("✅ Your credits and days have been updated and saved!");
+      // Update Firebase
+      firebase.database().ref('users/' + currentUser).update({
+        credits: newCredits,
+        days: newDays
+      }).then(() => {
+        alert("✅ Your credits and days have been updated and saved!");
+      }).catch(error => {
+        alert("Failed to save data: " + error.message);
+      });
     }
   </script>
 </body>
