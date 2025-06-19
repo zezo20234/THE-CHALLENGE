@@ -293,43 +293,7 @@
       alert("Error reading data: " + error);
     });
 };
- {
     // Initialize user data
-    currentUserData = { credits: 0, days: 0 };
-    set(userRef, currentUserData);
-  }
-  showWelcome();
-}).catch(error => {
-  alert("Error reading data: " + error);
-});
-
-
-
-      if (!defaultUsers[user]) {
-        alert("User not found.");
-        return;
-      }
-      if (defaultUsers[user].password !== pass) {
-        alert("Invalid password.");
-        return;
-      }
-
-      currentUser = user;
-      const userRef = ref(database, 'users/' + currentUser);
-
-      get(userRef).then(snapshot => {
-        if (snapshot.exists()) {
-          currentUserData = snapshot.val();
-        } else {
-          // Initialize user data
-          currentUserData = { credits: 0, days: 0 };
-          set(userRef, currentUserData);
-        }
-        showWelcome();
-      }).catch(error => {
-        alert("Error reading data: " + error);
-      });
-    };
 
     function showWelcome() {
       const loginLockIcon = document.getElementById("loginLockIcon");
