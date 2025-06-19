@@ -142,6 +142,8 @@
   <div id="infoBox">
     Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
   </div>
+  <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
+
 
   <div class="login-box" id="loginBox">
 <h2 style="text-align:center;">
@@ -310,6 +312,8 @@
         document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
         document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
         document.getElementById("infoBox").style.display = "block";
+        document.getElementById("logoutButton").style.display = "block";
+
       }, 1000);
     }
 
@@ -372,7 +376,7 @@
 
     setTimeout(() => {
       infoBox.innerText = ""; // clear message
-      showLoggedInUI();
+      
       updateInfoBox();
       listenForUserChanges();
 
@@ -440,14 +444,32 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+window.logout = function () {
+  localStorage.removeItem("savedUser");
+  currentUser = null;
+  currentUserData = null;
+
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  document.getElementById("loginBox").style.display = "block";
+  document.getElementById("welcomeBox").style.display = "none";
+  document.getElementById("reportForm").style.display = "none";
+  document.getElementById("selfEditArea").style.display = "none";
+  document.getElementById("selfEditor").style.display = "none";
+  document.getElementById("infoBox").style.display = "none";
+  document.getElementById("logoutButton").style.display = "none";
+
+  alert("You have been logged out.");
+};
+
   </script>
 
 <footer>
   <p>MADE BY ZEYAD AND CHATGPT</p>
   <p>Version 
     <span style="color: red; font-weight: bold; font-size: 1.5em;">2</span>
-    <span style="color: green; font-weight: bold; font-size: 1.5em;">8</span> 
-    <span style="color: red; font-weight: bold; font-size: 1.5em;">.5</span>
+    <span style="color: green; font-weight: bold; font-size: 1.5em;">9</span> 
+    <span style="color: red; font-weight: bold; font-size: 1.5em;"></span>
     | Made on 5/5/2025
   </p>
   <p>Game Partners: zezo games</p>
