@@ -261,35 +261,30 @@
   const pass = document.getElementById("password").value.trim();
 
   if (!defaultUsers[user]) {
-    alert("User not found.");
-    return;
+  alert("User not found.");
+  return;
+}
+if (defaultUsers[user].password !== pass) {
+  alert("Invalid password.");
+  return;
+}
+
+currentUser = user;
+const userRef = ref(database, 'users/' + currentUser);
+
+get(userRef).then(snapshot => {
+  if (snapshot.exists()) {
+    currentUserData = snapshot.val();
+  } else {
+    // Initialize user data
+    currentUserData = { credits: 0, days: 0 };
+    set(userRef, currentUserData);
   }
-  if (defaultUsers[user].password !== pass) {
-    alert("Invalid password.");
-    return;
-  }
+  showWelcome();
+}).catch(error => {
+  alert("Error reading data: " + error);
+});
 
-  currentUser = user;
-
-  // ✅ Save user to localStorage if "Keep me signed in" is checked
-  if (document.getElementById("keepSignedIn")?.checked) {
-    localStorage.setItem("savedUser", user);
-  }
-
-  const userRef = ref(database, 'users/' + currentUser);
-
-  get(userRef).then(snapshot => {
-    if (snapshot.exists()) {
-      currentUserData = snapshot.val();
-    } else {
-      currentUserData = { credits: 0, days: 0 };
-      set(userRef, currentUserData);
-    }
-    showWelcome();
-  }).catch(error => {
-    alert("Error reading data: " + error);
-  });
-};
 
 
       if (!defaultUsers[user]) {
