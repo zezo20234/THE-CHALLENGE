@@ -1,481 +1,539 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <!-- Removed old script tags for firebase-app and firebase-database -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CHALLENGE</title>
+  dont do anything see my code <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <!-- Removed old script tags for firebase-app and firebase-database -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CHALLENGE</title>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="green_red.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="green_red.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
-  <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" sizes="180x180" href="green_red.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="green_red.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: url('modern.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-    }
-    .login-box, form, #selfEditArea, #selfEditor {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    input, button, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 50px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      font-size: 16px;
-      backdrop-filter: blur(10px);
-      box-sizing: border-box;
-    }
-    button:hover {
-      background: rgba(255, 255, 255, 0.3);
-      color: #000;
-      cursor: pointer;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    #infoBox {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      padding: 10px 20px;
-      font-weight: bold;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      display: none;
-      color: white;
-    }
-    footer {
-       max-width: 400px;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      margin: auto;
-      width: fit-content;
-    }
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: url('modern.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: white;
+      }
+      .login-box, form, #selfEditArea, #selfEditor {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 25px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      input, button, select, textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 16px;
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: #000;
+        cursor: pointer;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+      }
+      #infoBox {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-weight: bold;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: none;
+        color: white;
+      }
+      footer {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 25px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        margin: auto;
+        width: fit-content;
+      }
 
-#loginLockIcon svg {
-  overflow: visible;
-}
+      .btnshop {
+        width: fit-content;
+        margin: auto;
+      }
 
-@keyframes lockOpen {
-  0% {
-    transform: rotate(0deg);
-    transform-origin: 50% 75%;
+  #loginLockIcon svg {
+    overflow: visible;
   }
-  100% {
-    transform: rotate(-45deg);
+
+  @keyframes lockOpen {
+    0% {
+      transform: rotate(0deg);
+      transform-origin: 50% 75%;
+    }
+    100% {
+      transform: rotate(-45deg);
+    }
   }
-}
 
-#loginLockIcon.open #lockShackle {
-  animation: lockOpen 0.1s forwards ease-in-out;
-  stroke: limegreen;
-}
-
-.fade-in {
-  animation: fadeInEffect 0.1s ease forwards;
-}
-
-@keyframes fadeInEffect {
-  from {
-    opacity: 5;
+  #loginLockIcon.open #lockShackle {
+    animation: lockOpen 0.1s forwards ease-in-out;
+    stroke: limegreen;
   }
-  to {
-    opacity: 1;
+
+  .fade-in {
+    animation: fadeInEffect 0.1s ease forwards;
   }
-}
 
-.letter {
-  display: inline-block;
-  opacity: 0;
-  animation: dropIn 0.6s ease forwards;
-}
+  @keyframes fadeInEffect {
+    from {
+      opacity: 5;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
-@keyframes dropIn {
-  0% {
+  .letter {
+    display: inline-block;
     opacity: 0;
-    transform: translateY(-40px);
+    animation: dropIn 0.6s ease forwards;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+
+  @keyframes dropIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-}
 
-.letter {
-  display: inline-block;
-  opacity: 0;
-  animation: dropIn 0.5s ease forwards; /* slightly slower */
-}
+  .letter {
+    display: inline-block;
+    opacity: 0;
+    animation: dropIn 0.5s ease forwards; /* slightly slower */
+  }
 
-  </style>
-</head>
-<body>
+    </style>
+  </head>
+  <body>
 
-  <div id="infoBox">
-    Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
-  </div>
-  <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
-
-
-  <div class="login-box" id="loginBox">
-<h2 style="text-align:center;">
-  Login
-  <span id="loginLockIcon" style="display:inline-block; width:24px; height:24px; vertical-align:middle; margin-left:8px;">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
-      <path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="white" stroke-width="2" />
-    </svg>
-  </span>
-</h2>
-
-    <input type="text" id="username" placeholder="Username" autocomplete="off" />
-    <input type="password" id="password" placeholder="Password" autocomplete="off" />
-
-<label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-  <input type="checkbox" id="keepSignedIn" /> Keep me signed in
-</label>
-
-<button onclick="checkLogin()">Login</button>
-
-  </div>
-
-<div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
-  <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
-</div>
-
-  <form id="reportForm" style="display:none;" action="https://formsubmit.co/zezo_z4ever@outlook.com" method="post">
-    <input type="hidden" name="_captcha" value="false" />
-    <input type="hidden" name="_next" value="https://zezo20234.github.io/TA7ADY/" />
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Enter your name" required />
-    <label for="report">Report:</label>
-    <textarea id="report" name="report" rows="2" placeholder="Your report here"></textarea>
-    <label for="reportWho">Report on who:</label>
-    <textarea id="reportWho" name="report_on_who" rows="2" placeholder="Name of who you report on"></textarea>
-    <label for="reportDetails">Report details:</label>
-    <textarea id="reportDetails" name="report_details" rows="3" placeholder="Explain what happened..."></textarea>
-    <label for="giveCredits">Give credits to:</label>
-    <textarea id="giveCredits" name="give_to_who_credits" rows="3" placeholder="Who should get credit?"></textarea>
-    <label for="credits">How many credits:</label>
-    <input type="number" id="credits" name="how_many_credits" step="100" min="100" max="5000" placeholder="Credits amount" />
-    <label for="rating">Rate this app:</label>
-    <div id="rating" style="display:flex; gap:10px; justify-content:center; margin-top: 5px;">
-      <label><input type="radio" name="rating" value="1" required />1⭐</label>
-      <label><input type="radio" name="rating" value="2" />2⭐</label>
-      <label><input type="radio" name="rating" value="3" />3⭐</label>
-      <label><input type="radio" name="rating" value="4" />4⭐</label>
-      <label><input type="radio" name="rating" value="5" />5⭐</label>
+    <div id="infoBox">
+      Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
     </div>
-    <input type="submit" class="glassBtn" value="SUBMIT" />
-    <button type="reset" id="resetButton">Reset</button>
-  </form>
+    <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
 
-  <div id="selfEditArea" class="login-box" style="display:none;">
-    <h3>🔒 Enter Secret Code</h3>
-    <input type="password" id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" />
-    <button onclick="checkSecretCode()">Unlock Editor</button>
-  </div>
 
-<div id="infoBox">
-    Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
-  </div>
+    <div class="login-box" id="loginBox">
+  <h2 style="text-align:center;">
+    Login
+    <span id="loginLockIcon" style="display:inline-block; width:24px; height:24px; vertical-align:middle; margin-left:8px;">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
+        <path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="white" stroke-width="2" />
+      </svg>
+    </span>
+  </h2>
+
+      <input type="text" id="username" placeholder="Username" autocomplete="off" />
+      <input type="password" id="password" placeholder="Password" autocomplete="off" />
+
+  <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+    <input type="checkbox" id="keepSignedIn" /> Keep me signed in
+  </label>
+
+  <button onclick="checkLogin()">Login</button>
+
+    </div>
 
   <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
-    <h1>Welcome back, <span id="userWelcome"></span>!</h1>
+    <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
   </div>
-  
-  <div id="selfEditor" class="login-box" style="display:none;">
-    <h3>Edit Your Own Account</h3>
-    <label for="selfCredits">Credits:</label>
-    <input type="number" id="selfCredits" placeholder="Update your credits" min="0" />
-    <label for="selfDays">Days:</label>
-    <input type="number" id="selfDays" placeholder="Update your days" min="0" />
-    
-    <!-- Added Challenge textarea -->
-    <label for="challengeText">Challenge:</label>
-    <textarea id="challengeText" placeholder="Enter challenge here..." rows="2"></textarea>
-    
-    <button onclick="saveSelfChanges()">Save My Changes</button>
+  <button class="btnshop" onclick="openShop()">🛒 Open Shop</button>
+
+  <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+    <h3>Shop</h3>
+    <button  class="btnshop" onclick="buyItem(500, -5)">Buy: 500 credits → -5 days</button><br>
+    <button onclick="buyItem(1000, -15)">Buy: 1000 credits → -15 days</button><br>
+    <button onclick="buyItem(3500, -35)">Buy: 3500 credits → -35 days</button><br>
+    <button onclick="buyItem(5000, 50)">Buy: 5000 credits → +50 days</button><br><br>
+    <button onclick="closeShop()">Close Shop</button>
   </div>
 
-  <script type="module">
-    // Import modular Firebase SDK functions
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
-    import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js";
 
-    // Default users with passwords (you can add more)
-    const defaultUsers = {
-      asser: { password: "asser2025" },
-      layan: { password: "layan999" },
-      zezo: { password: "zezo2023" }
-    };
+    <form id="reportForm" style="display:none;" action="https://formsubmit.co/zezo_z4ever@outlook.com" method="post">
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_next" value="https://zezo20234.github.io/TA7ADY/" />
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required />
+      <label for="report">Report:</label>
+      <textarea id="report" name="report" rows="2" placeholder="Your report here"></textarea>
+      <label for="reportWho">Report on who:</label>
+      <textarea id="reportWho" name="report_on_who" rows="2" placeholder="Name of who you report on"></textarea>
+      <label for="reportDetails">Report details:</label>
+      <textarea id="reportDetails" name="report_details" rows="3" placeholder="Explain what happened..."></textarea>
+      <label for="giveCredits">Give credits to:</label>
+      <textarea id="giveCredits" name="give_to_who_credits" rows="3" placeholder="Who should get credit?"></textarea>
+      <label for="credits">How many credits:</label>
+      <input type="number" id="credits" name="how_many_credits" step="100" min="100" max="5000" placeholder="Credits amount" />
+      <label for="rating">Rate this app:</label>
+      <div id="rating" style="display:flex; gap:10px; justify-content:center; margin-top: 5px;">
+        <label><input type="radio" name="rating" value="1" required />1⭐</label>
+        <label><input type="radio" name="rating" value="2" />2⭐</label>
+        <label><input type="radio" name="rating" value="3" />3⭐</label>
+        <label><input type="radio" name="rating" value="4" />4⭐</label>
+        <label><input type="radio" name="rating" value="5" />5⭐</label>
+      </div>
+      <input type="submit" class="glassBtn" value="SUBMIT" />
+      <button type="reset" id="resetButton">Reset</button>
+    </form>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
-      authDomain: "the-challenge-fa9b2.firebaseapp.com",
-      databaseURL: "https://the-challenge-fa9b2-default-rtdb.firebaseio.com",
-      projectId: "the-challenge-fa9b2",
-      storageBucket: "the-challenge-fa9b2.appspot.com",
-      messagingSenderId: "4102830619",
-      appId: "1:4102830619:web:581e033f36ec02708916be",
-      measurementId: "G-7M7JLK1V86"
-    };
+    <div id="selfEditArea" class="login-box" style="display:none;">
+      <h3>🔒 Enter Secret Code</h3>
+      <input type="password" id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" />
+      <button onclick="checkSecretCode()">Unlock Editor</button>
+    </div>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+  <div id="infoBox">
+      Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
+    </div>
 
-    let currentUser = null;
-    let currentUserData = null;
+    <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
+      <h1>Welcome back, <span id="userWelcome"></span>!</h1>
+    </div>
+    
+    <div id="selfEditor" class="login-box" style="display:none;">
+      <h3>Edit Your Own Account</h3>
+      <label for="selfCredits">Credits:</label>
+      <input type="number" id="selfCredits" placeholder="Update your credits" min="0" />
+      <label for="selfDays">Days:</label>
+      <input type="number" id="selfDays" placeholder="Update your days" min="0" />
+      
+      <!-- Added Challenge textarea -->
+      <label for="challengeText">Challenge:</label>
+      <textarea id="challengeText" placeholder="Enter challenge here..." rows="2"></textarea>
+      
+      <button onclick="saveSelfChanges()">Save My Changes</button>
+    </div>
 
-    // Login function
-  window.checkLogin = function () {
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
+    <script type="module">
+      // Import modular Firebase SDK functions
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
+      import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js";
 
-  if (!defaultUsers[user]) {
-    alert("User not found.");
+      // Default users with passwords (you can add more)
+      const defaultUsers = {
+        asser: { password: "asser2025" },
+        layan: { password: "layan999" },
+        zezo: { password: "zezo2023" }
+      };
+
+      // Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
+        authDomain: "the-challenge-fa9b2.firebaseapp.com",
+        databaseURL: "https://the-challenge-fa9b2-default-rtdb.firebaseio.com",
+        projectId: "the-challenge-fa9b2",
+        storageBucket: "the-challenge-fa9b2.appspot.com",
+        messagingSenderId: "4102830619",
+        appId: "1:4102830619:web:581e033f36ec02708916be",
+        measurementId: "G-7M7JLK1V86"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+
+      let currentUser = null;
+      let currentUserData = null;
+
+      // Login function
+    window.checkLogin = function () {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if (!defaultUsers[user]) {
+      alert("User not found.");
+      return;
+    }
+
+    if (defaultUsers[user].password !== pass) {
+      alert("Invalid password.");
+      return;
+    }
+
+    currentUser = user;
+
+    // Keep me signed in
+    if (document.getElementById("keepSignedIn")?.checked) {
+      localStorage.setItem("savedUser", user);
+    }
+
+    const userRef = ref(database, "users/" + currentUser);
+
+    get(userRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          currentUserData = snapshot.val();
+        } else {
+          currentUserData = { credits: 0, days: 0 };
+          set(userRef, currentUserData);
+        }
+        showWelcome();
+      })
+      .catch((error) => {
+        alert("Error reading data: " + error);
+      });
+  };
+      // Initialize user data
+
+      function showWelcome() {
+        const loginLockIcon = document.getElementById("loginLockIcon");
+        loginLockIcon.classList.add("open");
+
+        setTimeout(() => {
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("welcomeBox").style.display = "block";
+          animateWelcomeText(currentUser); // ← call animation here
+
+          document.getElementById("reportForm").style.display = "block";
+          document.getElementById("selfEditArea").style.display = "block";
+
+          document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
+          document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
+          document.getElementById("infoBox").style.display = "block";
+          document.getElementById("logoutButton").style.display = "block";
+
+        }, 1000);
+      }
+
+      // Secret code check for self edit unlock
+      window.checkSecretCode = function() {
+        const code = document.getElementById("secretCodeInput").value.trim();
+        if (code === "2013") {
+          alert("Editor unlocked!");
+          document.getElementById("selfEditor").style.display = "block";
+          // Pre-fill current credits/days
+          document.getElementById("selfCredits").value = currentUserData.credits ?? 0;
+          document.getElementById("selfDays").value = currentUserData.days ?? 0;
+          
+          // Load existing challenge from Firebase into textarea
+          get(ref(database, 'global/challenge')).then(snapshot => {
+            if (snapshot.exists()) {
+              document.getElementById("challengeText").value = snapshot.val();
+            } else {
+              document.getElementById("challengeText").value = "";
+            }
+          });
+        } else {
+          alert("Wrong secret code.");
+        }
+      };
+
+      window.saveSelfChanges = function() {
+        const newCredits = parseInt(document.getElementById("selfCredits").value, 10);
+        const newDays = parseInt(document.getElementById("selfDays").value, 10);
+        const challenge = document.getElementById("challengeText").value.trim();
+
+        if (isNaN(newCredits) || isNaN(newDays)) {
+          alert("Please enter valid numbers.");
+          return;
+        }
+
+        const userRef = ref(database, 'users/' + currentUser);
+
+        update(userRef, { credits: newCredits, days: newDays }).then(() => {
+          alert("Changes saved.");
+          currentUserData.credits = newCredits;
+          currentUserData.days = newDays;
+          document.getElementById("infoCredits").textContent = newCredits;
+          document.getElementById("infoDays").textContent = newDays;
+        }).catch(err => {
+          alert("Error saving data: " + err);
+        });
+
+        if (challenge) {
+          set(ref(database, 'global/challenge'), challenge).catch(err => {
+            alert("Error saving challenge: " + err);
+          });
+        }
+      };
+
+      const welcomeBox = document.getElementById("welcomeBox");
+      welcomeBox.classList.remove("fade-in");
+      void welcomeBox.offsetWidth; // trigger reflow
+      welcomeBox.classList.add("fade-in");
+
+      setTimeout(() => {
+        infoBox.innerText = ""; // clear message
+        
+        updateInfoBox();
+        listenForUserChanges();
+
+        const loginLockIcon = document.getElementById("loginLockIcon");
+        loginLockIcon.classList.add("open");
+
+        // Add fade-in effect
+        const welcomeBox = document.getElementById("welcomeBox");
+        welcomeBox.classList.add("fade-in");
+      }, 500); // or 1000, depending on your delay
+
+      // Listen to challenge updates to update footer live
+      onValue(ref(database, 'global/challenge'), snapshot => {
+        const val = snapshot.exists() ? snapshot.val() : "No challenge set.";
+        document.getElementById("footerChallenge").textContent = val;
+      });
+
+      function animateWelcomeText(name) {
+        const welcomeMessage = document.getElementById("welcomeMessage");
+        const userWelcome = document.getElementById("userWelcome");
+
+        welcomeMessage.innerHTML = "";
+        userWelcome.innerHTML = "";
+
+        const message = "Welcome back, ";
+        const delay = 0.12; // slower animation
+
+        // Animate "Welcome back, "
+        message.split("").forEach((char, i) => {
+          const span = document.createElement("span");
+          span.textContent = char;
+          span.className = "letter";
+          span.style.animationDelay = `${i * delay}s`;
+          welcomeMessage.appendChild(span);
+        });
+
+        // Animate username after message
+        name.split("").forEach((char, j) => {
+          const span = document.createElement("span");
+          span.textContent = char;
+          span.className = "letter";
+          span.style.animationDelay = `${(message.length + j) * delay}s`;
+          userWelcome.appendChild(span);
+        });
+      }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = localStorage.getItem("savedUser");
+    if (savedUser && defaultUsers[savedUser]) {
+      currentUser = savedUser;
+      const userRef = ref(database, 'users/' + currentUser);
+
+      get(userRef).then(snapshot => {
+        if (snapshot.exists()) {
+          currentUserData = snapshot.val();
+        } else {
+          currentUserData = { credits: 0, days: 0 };
+          set(userRef, currentUserData);
+        }
+        showWelcome();
+      }).catch(error => {
+        alert("Auto-login error: " + error);
+      });
+    }
+  });
+
+
+  window.logout = function () {
+    localStorage.removeItem("savedUser");
+    currentUser = null;
+    currentUserData = null;
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("loginBox").style.display = "block";
+    document.getElementById("welcomeBox").style.display = "none";
+    document.getElementById("reportForm").style.display = "none";
+    document.getElementById("selfEditArea").style.display = "none";
+    document.getElementById("selfEditor").style.display = "none";
+    document.getElementById("infoBox").style.display = "none";
+    document.getElementById("logoutButton").style.display = "none";
+
+    alert("You have been logged out.");
+  };
+
+// Show the shop container
+window.openShop = function () {
+  document.getElementById("shopContainer").style.display = "block";
+};
+
+// Hide the shop container
+window.closeShop = function () {
+  document.getElementById("shopContainer").style.display = "none";
+};
+
+// Handle buying items
+window.buyItem = function (creditsCost, daysChange) {
+  if (!currentUserData) {
+    alert("You must be logged in.");
     return;
   }
 
-  if (defaultUsers[user].password !== pass) {
-    alert("Invalid password.");
+  if (currentUserData.credits < creditsCost) {
+    alert("Not enough credits.");
     return;
   }
 
-  currentUser = user;
-
-  // Keep me signed in
-  if (document.getElementById("keepSignedIn")?.checked) {
-    localStorage.setItem("savedUser", user);
-  }
+  const newCredits = currentUserData.credits - creditsCost;
+  const newDays = (currentUserData.days ?? 0) + daysChange;
 
   const userRef = ref(database, "users/" + currentUser);
 
-  get(userRef)
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        currentUserData = snapshot.val();
-      } else {
-        currentUserData = { credits: 0, days: 0 };
-        set(userRef, currentUserData);
-      }
-      showWelcome();
-    })
-    .catch((error) => {
-      alert("Error reading data: " + error);
-    });
-};
-    // Initialize user data
-
-    function showWelcome() {
-      const loginLockIcon = document.getElementById("loginLockIcon");
-      loginLockIcon.classList.add("open");
-
-      setTimeout(() => {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("welcomeBox").style.display = "block";
-        animateWelcomeText(currentUser); // ← call animation here
-
-        document.getElementById("reportForm").style.display = "block";
-        document.getElementById("selfEditArea").style.display = "block";
-
-        document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
-        document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
-        document.getElementById("infoBox").style.display = "block";
-        document.getElementById("logoutButton").style.display = "block";
-
-      }, 1000);
-    }
-
-    // Secret code check for self edit unlock
-    window.checkSecretCode = function() {
-      const code = document.getElementById("secretCodeInput").value.trim();
-      if (code === "2013") {
-        alert("Editor unlocked!");
-        document.getElementById("selfEditor").style.display = "block";
-        // Pre-fill current credits/days
-        document.getElementById("selfCredits").value = currentUserData.credits ?? 0;
-        document.getElementById("selfDays").value = currentUserData.days ?? 0;
-        
-        // Load existing challenge from Firebase into textarea
-        get(ref(database, 'global/challenge')).then(snapshot => {
-          if (snapshot.exists()) {
-            document.getElementById("challengeText").value = snapshot.val();
-          } else {
-            document.getElementById("challengeText").value = "";
-          }
-        });
-      } else {
-        alert("Wrong secret code.");
-      }
-    };
-
-    window.saveSelfChanges = function() {
-      const newCredits = parseInt(document.getElementById("selfCredits").value, 10);
-      const newDays = parseInt(document.getElementById("selfDays").value, 10);
-      const challenge = document.getElementById("challengeText").value.trim();
-
-      if (isNaN(newCredits) || isNaN(newDays)) {
-        alert("Please enter valid numbers.");
-        return;
-      }
-
-      const userRef = ref(database, 'users/' + currentUser);
-
-      update(userRef, { credits: newCredits, days: newDays }).then(() => {
-        alert("Changes saved.");
-        currentUserData.credits = newCredits;
-        currentUserData.days = newDays;
-        document.getElementById("infoCredits").textContent = newCredits;
-        document.getElementById("infoDays").textContent = newDays;
-      }).catch(err => {
-        alert("Error saving data: " + err);
-      });
-
-      if (challenge) {
-        set(ref(database, 'global/challenge'), challenge).catch(err => {
-          alert("Error saving challenge: " + err);
-        });
-      }
-    };
-
-    const welcomeBox = document.getElementById("welcomeBox");
-    welcomeBox.classList.remove("fade-in");
-    void welcomeBox.offsetWidth; // trigger reflow
-    welcomeBox.classList.add("fade-in");
-
-    setTimeout(() => {
-      infoBox.innerText = ""; // clear message
-      
-      updateInfoBox();
-      listenForUserChanges();
-
-      const loginLockIcon = document.getElementById("loginLockIcon");
-      loginLockIcon.classList.add("open");
-
-      // Add fade-in effect
-      const welcomeBox = document.getElementById("welcomeBox");
-      welcomeBox.classList.add("fade-in");
-    }, 500); // or 1000, depending on your delay
-
-    // Listen to challenge updates to update footer live
-    onValue(ref(database, 'global/challenge'), snapshot => {
-      const val = snapshot.exists() ? snapshot.val() : "No challenge set.";
-      document.getElementById("footerChallenge").textContent = val;
-    });
-
-    function animateWelcomeText(name) {
-      const welcomeMessage = document.getElementById("welcomeMessage");
-      const userWelcome = document.getElementById("userWelcome");
-
-      welcomeMessage.innerHTML = "";
-      userWelcome.innerHTML = "";
-
-      const message = "Welcome back, ";
-      const delay = 0.12; // slower animation
-
-      // Animate "Welcome back, "
-      message.split("").forEach((char, i) => {
-        const span = document.createElement("span");
-        span.textContent = char;
-        span.className = "letter";
-        span.style.animationDelay = `${i * delay}s`;
-        welcomeMessage.appendChild(span);
-      });
-
-      // Animate username after message
-      name.split("").forEach((char, j) => {
-        const span = document.createElement("span");
-        span.textContent = char;
-        span.className = "letter";
-        span.style.animationDelay = `${(message.length + j) * delay}s`;
-        userWelcome.appendChild(span);
-      });
-    }
-
-window.addEventListener('DOMContentLoaded', () => {
-  const savedUser = localStorage.getItem("savedUser");
-  if (savedUser && defaultUsers[savedUser]) {
-    currentUser = savedUser;
-    const userRef = ref(database, 'users/' + currentUser);
-
-    get(userRef).then(snapshot => {
-      if (snapshot.exists()) {
-        currentUserData = snapshot.val();
-      } else {
-        currentUserData = { credits: 0, days: 0 };
-        set(userRef, currentUserData);
-      }
-      showWelcome();
-    }).catch(error => {
-      alert("Auto-login error: " + error);
-    });
-  }
-});
-
-
-window.logout = function () {
-  localStorage.removeItem("savedUser");
-  currentUser = null;
-  currentUserData = null;
-
-  document.getElementById("username").value = "";
-  document.getElementById("password").value = "";
-  document.getElementById("loginBox").style.display = "block";
-  document.getElementById("welcomeBox").style.display = "none";
-  document.getElementById("reportForm").style.display = "none";
-  document.getElementById("selfEditArea").style.display = "none";
-  document.getElementById("selfEditor").style.display = "none";
-  document.getElementById("infoBox").style.display = "none";
-  document.getElementById("logoutButton").style.display = "none";
-
-  alert("You have been logged out.");
+  update(userRef, {
+    credits: newCredits,
+    days: newDays
+  }).then(() => {
+    currentUserData.credits = newCredits;
+    currentUserData.days = newDays;
+    document.getElementById("infoCredits").textContent = newCredits;
+    document.getElementById("infoDays").textContent = newDays;
+    alert("Purchase successful!");
+  }).catch(err => {
+    alert("Error updating data: " + err);
+  });
 };
 
-  </script>
 
-<footer>
-  <p>MADE BY ZEYAD AND CHATGPT</p>
-  <p>Version 
-    <span style="color: red; font-weight: bold; font-size: 1.5em;">2</span>
-    <span style="color: green; font-weight: bold; font-size: 1.5em;">9</span> 
-    <span style="color: red; font-weight: bold; font-size: 1.5em;"></span>
-    | Made on 5/5/2025
-  </p>
-  <p>Game Partners: zezo games</p>
-    <h1><strong>Challenge:</strong> <span id="footerChallenge">Loading...</h1>
-  </p>
-</footer>
+    </script>
 
-</body>
-</html>
+  <footer>
+    <p>MADE BY ZEYAD AND CHATGPT</p>
+    <p>Version 
+      <span style="color: red; font-weight: bold; font-size: 1.5em;">2</span>
+      <span style="color: green; font-weight: bold; font-size: 1.5em;">9  </span> 
+      <span style="color: red; font-weight: bold; font-size: 1.5em;"></span>
+      | Made on 5/5/2025
+    </p>
+    <p>Game Partners: zezo games</p>
+      <h1><strong>Challenge:</strong> <span id="footerChallenge">Loading...</h1>
+    </p>
+  </footer>
+
+  </body>
+  </html>
