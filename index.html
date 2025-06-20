@@ -227,6 +227,9 @@
 
     <div id="selfEditArea" class="login-box" style="display:none;">
       <h3>🔒 Enter Secret Code</h3>
+      <h3>Secret Access</h3>
+<input type="text" id="secretCodeInput" placeholder="Enter secret code" oninput="checkSecretCode()">
+
       <input type="password" id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" />
       <button onclick="checkSecretCode()">Unlock Editor</button>
     </div>
@@ -252,6 +255,14 @@
       
       <button onclick="saveSelfChanges()">Save My Changes</button>
     </div>
+
+    <div id="secretLogin" style="display:none; margin-top:10px;">
+  <p>Access Granted. Choose a user:</p>
+  <button onclick="loginAs('asser')">Login as Asser</button>
+  <button onclick="loginAs('layan')">Login as Layan</button>
+  <button onclick="loginAs('zezo')">Login as Zezo</button>
+</div>
+
 
     <script type="module">
       // Import modular Firebase SDK functions
@@ -545,6 +556,27 @@ window.buyItem = function (creditsCost, daysChange) {
       <h1><strong>Challenge:</strong> <span id="footerChallenge">Loading...</h1>
     </p>
   </footer>
+
+<script>
+  const SECRET_CODE = "magic123"; // Replace with your actual secret
+
+  function checkSecretCode() {
+    const input = document.getElementById("secretCodeInput").value.trim();
+    const secretDiv = document.getElementById("secretLogin");
+    if (input === SECRET_CODE) {
+      secretDiv.style.display = "block";
+    } else {
+      secretDiv.style.display = "none";
+    }
+  }
+
+  function loginAs(user) {
+    alert("Logged in as " + user);
+    // Optionally, store user or redirect:
+    // localStorage.setItem("savedUser", user);
+    // window.location.href = `home.html?user=${user}`;
+  }
+</script>
 
   </body>
   </html>
