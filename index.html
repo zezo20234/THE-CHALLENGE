@@ -146,8 +146,8 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             display: inline-block;
             border-radius: 50px; /* Make them pill-shaped */
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: blue;
+            color: red;
             font-size: 16px;
             backdrop-filter: blur(10px);
             box-sizing: border-box;
@@ -359,7 +359,7 @@
         // Secret code check for self edit unlock
         window.checkSecretCode = function() {
             const code = document.getElementById("secretCodeInput").value.trim();
-            if (code === "zezo321") {
+            if (code === "7") {
                 alert("Editor unlocked!");
                 document.getElementById("selfEditor").style.display = "block";
                 // Pre-fill current credits/days
