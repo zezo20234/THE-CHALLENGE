@@ -207,10 +207,11 @@
 
     <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <h3>Shop</h3>
-        <button class="btnshop" onclick="buyItem(500, -5)">Buy: 500 credits → -5 days</button><br>
-        <button onclick="buyItem(1000, -15)">Buy: 1000 credits → -15 days</button><br>
-        <button onclick="buyItem(3500, -35)">Buy: 3500 credits → -35 days</button><br>
-        <button onclick="buyItem(5000, -50)">Buy: 5000 credits → -50 days</button><br><br>
+        <button class="btnshop" onclick="buyItem(500, -10)">Buy: 500 credits → -10 days</button><br>
+        <button onclick="buyItem(1000, -25)">Buy: 1000 credits → -25 days</button><br>
+        <button onclick="buyItem(3500, -40)">Buy: 3500 credits → -40 days</button><br>
+        <button onclick="buyItem(5000, -60)">Buy: 5000 credits → -60 days</button><br><br>
+        <button onclick="buyInfiniteCredits()">Buy: Infinite Credits (30s) → 15,000 credits</button><br><br>
         <button onclick="closeShop()">Close Shop</button>
     </div>
 
@@ -293,6 +294,7 @@
 
         let currentUser = null;
         let currentUserData = null;
+        let infiniteCreditsActive = false; // Flag to track infinite credits
 
         // Login function (original, with password check)
         window.checkLogin = function (usernameOverride = null) { // Added usernameOverride parameter
@@ -508,6 +510,21 @@
                 return;
             }
 
+            // If infinite credits is active, bypass credit check for other items
+            if (infiniteCreditsActive) {
+                const newDays = (currentUserData.days ?? 0) + daysChange;
+                const userRef = ref(database, "users/" + currentUser);
+                update(userRef, { days: newDays }).then(() => {
+                    currentUserData.days = newDays;
+                    document.getElementById("infoDays").textContent = newDays;
+                    alert("Purchase successful with infinite credits!");
+                }).catch(err => {
+                    alert("Error updating data: " + err);
+                });
+                return; // Exit after processing with infinite credits
+            }
+
+
             if (currentUserData.credits < creditsCost) {
                 alert("Not enough credits.");
                 return;
@@ -551,6 +568,38 @@
             window.checkLogin(user);
         };
 
+        // --- New Function for Infinite Credits Purchase ---
+        window.buyInfiniteCredits = function() {
+            const creditsCost = 15000;
+            if (!currentUserData) {
+                alert("You must be logged in to buy this.");
+                return;
+            }
+
+            if (currentUserData.credits < creditsCost) {
+                alert("You need " + creditsCost + " credits to buy Infinite Credits!");
+                return;
+            }
+
+            // Deduct credits from the user
+            const newCredits = currentUserData.credits - creditsCost;
+            const userRef = ref(database, "users/" + currentUser);
+
+            update(userRef, { credits: newCredits }).then(() => {
+                currentUserData.credits = newCredits;
+                document.getElementById("infoCredits").textContent = newCredits;
+                alert("Infinite Credits activated for 30 seconds!");
+                
+                infiniteCreditsActive = true;
+                // Set a timeout to deactivate infinite credits after 30 seconds
+                setTimeout(() => {
+                    infiniteCreditsActive = false;
+                    alert("Infinite Credits deactivated.");
+                }, 15000); // 30 seconds
+            }).catch(err => {
+                alert("Error purchasing Infinite Credits: " + err);
+            });
+        };
     </script>
 
     <footer>
