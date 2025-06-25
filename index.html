@@ -20,7 +20,7 @@
             background-size: cover;
             color: white;
         }
-        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #transferInterface { /* Added #transferInterface */
+        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox {
             max-width: 400px;
             margin: 20px auto;
             padding: 25px;
@@ -78,52 +78,122 @@
             margin: auto;
             width: fit-content;
         }
-        .btnshop { width: fit-content; margin: auto; }
-        #loginLockIcon svg { overflow: visible; }
-        @keyframes lockOpen { 0% { transform: rotate(0deg); transform-origin: 50% 75%; } 100% { transform: rotate(-45deg); } }
-        #loginLockIcon.open #lockShackle { animation: lockOpen 0.1s forwards ease-in-out; stroke: limegreen; }
-        .fade-in { animation: fadeInEffect 0.1s ease forwards; }
-        @keyframes fadeInEffect { from { opacity: 5; } to { opacity: 1; } }
-        .letter { display: inline-block; opacity: 0; animation: dropIn 0.6s ease forwards; }
-        @keyframes dropIn { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } }
-        .user-list { display: none; margin-top: 20px; text-align: center; }
-        .user { cursor: pointer; margin: 10px; padding: 12px 25px; border: 1px solid rgba(255, 255, 255, 0.3); display: inline-block; border-radius: 50px; background: blue; color: red; font-size: 16px; backdrop-filter: blur(10px); box-sizing: border-box; transition: background 0.3s ease, color 0.3s ease; }
-        .user:hover { background: rgba(255, 255, 255, 0.3); color: #000; }
-        
-        /* Styles for new Transfer UI */
-        #transferCodeDisplay {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #ffc107;
-            text-align: center;
-            letter-spacing: 5px;
-            padding: 15px;
-            border: 2px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
+        .btnshop {
+            width: fit-content;
+            margin: auto;
         }
-        .toggle-button {
-            background: rgba(0,0,0,0.2) !important; /* Overrides generic button style */
+        #loginLockIcon svg {
+            overflow: visible;
+        }
+        @keyframes lockOpen {
+            0% {
+                transform: rotate(0deg);
+                transform-origin: 50% 75%;
+            }
+            100% {
+                transform: rotate(-45deg);
+            }
+        }
+        #loginLockIcon.open #lockShackle {
+            animation: lockOpen 0.1s forwards ease-in-out;
+            stroke: limegreen;
+        }
+        .fade-in {
+            animation: fadeInEffect 0.1s ease forwards;
+        }
+        @keyframes fadeInEffect {
+            from {
+                opacity: 5;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            animation: dropIn 0.6s ease forwards;
+        }
+        @keyframes dropIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .user-list {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .user {
             cursor: pointer;
-            text-decoration: underline;
+            margin: 10px;
+            padding: 12px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            border-radius: 50px;
+            background: blue;
+            color: red;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .user:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #000;
+        }
+        /* Styles for the credit code result */
+        #generatedCodeDisplay {
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+            cursor: copy;
+            overflow-wrap: break-word; /* Ensure long codes wrap */
         }
     </style>
 </head>
 <body>
 
-    <div id="infoBox">Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span></div>
-    <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px;">Log Out</button>
+    <div id="infoBox">
+        Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
+    </div>
+    <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
 
     <div class="login-box" id="loginBox">
-        <h2 style="text-align:center;">Login <span id="loginLockIcon" style="display:inline-block; width:24px; height:24px; vertical-align:middle; margin-left:8px;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="white" stroke-width="2" /></svg></span></h2>
+        <h2 style="text-align:center;">
+            Login
+            <span id="loginLockIcon" style="display:inline-block; width:24px; height:24px; vertical-align:middle; margin-left:8px;">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                    <path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="white" stroke-width="2" />
+                </svg>
+            </span>
+        </h2>
         <input type="text" id="username" placeholder="Username" autocomplete="on" />
         <input type="password" id="password" placeholder="Password" autocomplete="on" />
-        <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;"><input type="checkbox" id="keepSignedIn" /> Keep me signed in</label>
+
+        <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <input type="checkbox" id="keepSignedIn" /> Keep me signed in
+        </label>
         <button onclick="checkLogin()">Login</button>
+
         <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
+
         <div id="accessCodeContainer">
             <h3 style="text-align:center;">Quick Access (with code)</h3>
             <input type="password" id="quickAccessCodeInput" placeholder="Enter Quick Access Code" />
             <button onclick="checkQuickAccessCode()">Unlock Quick Access</button>
+
             <div class="user-list" id="quickUserList">
                 <p>Select a User for Quick Access:</p>
                 <div class="user" onclick="quickLoginUser('zezo')">zezo</div>
@@ -136,10 +206,7 @@
     <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
         <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
     </div>
-
-    <button class="btnshop" onclick="openShop()">🛒 Open Shop</button>
-
-    <div id="shopContainer" style="display: block; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+    <button class="btnshop" onclick="openShop()" style="display:none;">🛒 Open Shop</button> <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <h3>Shop</h3>
         <button class="btnshop" onclick="buyItem(500, -5)">Buy: 500 credits → -5 days</button><br>
         <button onclick="buyItem(1000, -15)">Buy: 1000 credits → -15 days</button><br>
@@ -153,32 +220,6 @@
         <button onclick="buyItem(10000, -100)">Buy: 10000 credits → -100 days</button><br><br>
         <button onclick="buyInfiniteCredits()">Buy: Infinite Credits (2.5s) → 15,000 credits</button><br><br>
         <button onclick="closeShop()">Close Shop</button>
-    </div>
-
-    <div id="transferInterface" class="login-box" style="display:none;">
-        <div id="senderView">
-            <h3>💸 Send Credits</h3>
-            <label for="transferAmount">Amount to Send:</label>
-            <input type="number" id="transferAmount" placeholder="e.g., 500" min="1" />
-            <button onclick="generateTransferCode()">Generate Transfer Code</button>
-            <p style="text-align:center; margin-top:15px;">Want to receive credits instead?</p>
-            <button class="toggle-button" onclick="toggleTransferMode('receive')">Switch to Receive Mode</button>
-        </div>
-
-        <div id="receiverView" style="display:none;">
-            <h3>🙌 Receive Credits</h3>
-            <label for="transferCodeInput">Enter 4-Digit Code:</label>
-            <input type="number" id="transferCodeInput" placeholder="Code from sender" />
-            <button onclick="claimTransfer()">Receive Credits</button>
-            <p style="text-align:center; margin-top:15px;">Want to send credits instead?</p>
-            <button class="toggle-button" onclick="toggleTransferMode('send')">Switch to Send Mode</button>
-        </div>
-
-        <div id="statusView" style="display:none; text-align:center;">
-            <p id="statusMessage">Status</p>
-            <div id="transferCodeDisplay"></div>
-            <button onclick="cancelTransfer()">Cancel</button>
-        </div>
     </div>
 
     <form id="reportForm" style="display:none;" action="https://formsubmit.co/zezo_z4ever@outlook.com" method="post">
@@ -211,6 +252,26 @@
         <button type="reset" id="resetButton">Reset</button>
     </form>
 
+    <div id="creditCodeBox" class="login-box" style="display:none;">
+        <h3>🎁 Credit Codes</h3>
+        <p>Create or redeem codes to manage credits.</p>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
+
+        <h4>Create a Code</h4>
+        <label for="createCodeAmount">Amount:</label>
+        <input type="number" id="createCodeAmount" placeholder="Enter amount to package in code" min="1" />
+        <button onclick="generateCreditCode()">Create Code</button>
+        <div id="generatedCodeDisplay" onclick="navigator.clipboard.writeText(this.innerText); alert('Code copied to clipboard!')"></div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
+
+        <h4>Redeem a Code</h4>
+        <label for="redeemCodeInput">Code:</label>
+        <input type="text" id="redeemCodeInput" placeholder="Enter code to redeem" />
+        <button onclick="redeemCreditCode()">Redeem Code</button>
+    </div>
+
     <div id="selfEditArea" class="login-box" style="display:none;">
         <h3>🔒 Enter Secret Code</h3>
         <input type="password" id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" />
@@ -223,17 +284,26 @@
         <input type="number" id="selfCredits" placeholder="Update your credits" min="0" />
         <label for="selfDays">Days:</label>
         <input type="number" id="selfDays" placeholder="Update your days" min="0" />
-        
+
         <label for="challengeText">Challenge:</label>
         <textarea id="challengeText" placeholder="Enter challenge here..." rows="2"></textarea>
-        
+
         <button onclick="saveSelfChanges()">Save My Changes</button>
     </div>
 
     <script type="module">
+        // Import modular Firebase SDK functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js";
 
+        // Default users with passwords (you can add more)
+        const defaultUsers = {
+            asser: { password: "asser2025" },
+            layan: { password: "layan999" },
+            zezo: { password: "zezo2023" }
+        };
+
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAdmiUcQ_yZDL4Gg0r93HjqzPYQ6N-gzM8",
             authDomain: "the-challenge-fa9b2.firebaseapp.com",
@@ -245,46 +315,52 @@
             measurementId: "G-7M7JLK1V86"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        const defaultUsers = {
-            asser: { password: "asser2025" },
-            layan: { password: "layan999" },
-            zezo: { password: "zezo2023" }
-        };
-
         let currentUser = null;
         let currentUserData = null;
-        let infiniteCreditsActive = false;
-        let activeTransferCode = null; // Stores the code generated by the sender
-        let transferListener = null; // Stores the Firebase listener for the transfer code
+        let infiniteCreditsActive = false; // Flag to track infinite credits
 
-        // --- LOGIN AND UI ---
-        window.checkLogin = function (usernameOverride = null) {
-            const user = (usernameOverride || document.getElementById("username").value.trim()).toLowerCase();
+        // Login function (original, with password check)
+        window.checkLogin = function (usernameOverride = null) { // Added usernameOverride parameter
+            const user = usernameOverride || document.getElementById("username").value.trim();
             const pass = document.getElementById("password").value.trim();
 
             if (!defaultUsers[user]) {
-                alert("User not found."); return;
+                alert("User not found.");
+                return;
             }
+
+            // Only check password if not using quick access
             if (!usernameOverride && defaultUsers[user].password !== pass) {
-                alert("Invalid password."); return;
+                alert("Invalid password.");
+                return;
             }
 
             currentUser = user;
+
+            // Keep me signed in
             if (document.getElementById("keepSignedIn")?.checked) {
                 localStorage.setItem("savedUser", user);
             }
 
             const userRef = ref(database, "users/" + currentUser);
-            get(userRef).then(snapshot => {
-                currentUserData = snapshot.exists() ? snapshot.val() : { credits: 0, days: 0 };
-                if (!snapshot.exists()) set(userRef, currentUserData); // Initialize if new
-                showWelcome();
-            }).catch(error => {
-                alert("Error reading data: " + error);
-            });
+
+            get(userRef)
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        currentUserData = snapshot.val();
+                    } else {
+                        currentUserData = { credits: 0, days: 0 };
+                        set(userRef, currentUserData);
+                    }
+                    showWelcome();
+                })
+                .catch((error) => {
+                    alert("Error reading data: " + error);
+                });
         };
 
         function showWelcome() {
@@ -292,71 +368,95 @@
             loginLockIcon.classList.add("open");
 
             setTimeout(() => {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("welcomeBox").style.display = "block";
-    animateWelcomeText(currentUser);
+                document.getElementById("loginBox").style.display = "none";
+                document.getElementById("welcomeBox").style.display = "block";
+                animateWelcomeText(currentUser);
 
-    document.getElementById("reportForm").style.display = "block";
-    document.getElementById("selfEditArea").style.display = "block";
-    // document.getElementById("shopContainer").style.display = "block"; // Removed this line
-    document.querySelector('.btnshop').style.display = "block";
-    document.getElementById("transferInterface").style.display = "block";
-    document.getElementById("quickAccessArea").style.display = "block";
-    document.getElementById("infoBox").style.display = "block";
-}, 1000);
+                document.getElementById("reportForm").style.display = "block";
+                document.getElementById("selfEditArea").style.display = "block";
+                // document.getElementById("shopContainer").style.display = "block"; // REMOVED: This line no longer opens the shop
+                document.getElementById("creditCodeBox").style.display = "block";
+                document.querySelector('.btnshop').style.display = "block"; // Show shop open button
 
+                document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
+                document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
+                document.getElementById("infoBox").style.display = "block";
+                document.getElementById("logoutButton").style.display = "block";
+
+            }, 1000);
         }
-        document.getElementById("shopContainer").style.display = "none";
 
+        // Secret code check for self edit unlock
+        window.checkSecretCode = function() {
+            const code = document.getElementById("secretCodeInput").value.trim();
+            if (code === "7") {
+                alert("Editor unlocked!");
+                document.getElementById("selfEditor").style.display = "block";
+                // Pre-fill current credits/days
+                document.getElementById("selfCredits").value = currentUserData.credits ?? 0;
+                document.getElementById("selfDays").value = currentUserData.days ?? 0;
 
-        window.logout = function () {
-            if(activeTransferCode) cancelTransfer(); // Cancel any active transfer on logout
-            localStorage.removeItem("savedUser");
-            currentUser = null;
-            currentUserData = null;
-            infiniteCreditsActive = false; // Reset infinite credits status
-
-            // Hide all user-specific elements and show login
-            document.getElementById("username").value = "";
-            document.getElementById("password").value = "";
-            document.getElementById("loginBox").style.display = "block";
-            document.getElementById("welcomeBox").style.display = "none";
-            document.getElementById("reportForm").style.display = "none";
-            document.getElementById("selfEditArea").style.display = "none";
-            document.getElementById("selfEditor").style.display = "none";
-            document.getElementById("infoBox").style.display = "none";
-            document.getElementById("logoutButton").style.display = "none";
-            document.getElementById("shopContainer").style.display = "none";
-            document.querySelector('.btnshop').style.display = "none";
-            document.getElementById("transferInterface").style.display = "none"; // Hide transfer UI
-
-            // Reset quick access section
-            document.getElementById("quickAccessCodeInput").value = "";
-            document.getElementById("quickUserList").style.display = "none";
-
-            alert("You have been logged out.");
+                // Load existing challenge from Firebase into textarea
+                get(ref(database, 'global/challenge')).then(snapshot => {
+                    if (snapshot.exists()) {
+                        document.getElementById("challengeText").value = snapshot.val();
+                    } else {
+                        document.getElementById("challengeText").value = "";
+                    }
+                });
+            } else {
+                alert("Wrong secret code.");
+            }
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem("savedUser");
-            if (savedUser && defaultUsers[savedUser]) {
-                window.checkLogin(savedUser);
+        window.saveSelfChanges = function() {
+            const newCredits = parseInt(document.getElementById("selfCredits").value, 10);
+            const newDays = parseInt(document.getElementById("selfDays").value, 10);
+            const challenge = document.getElementById("challengeText").value.trim();
+
+            if (isNaN(newCredits) || isNaN(newDays)) {
+                alert("Please enter valid numbers.");
+                return;
             }
-        });
+
+            const userRef = ref(database, 'users/' + currentUser);
+
+            update(userRef, { credits: newCredits, days: newDays }).then(() => {
+                alert("Changes saved.");
+                currentUserData.credits = newCredits;
+                currentUserData.days = newDays;
+                document.getElementById("infoCredits").textContent = newCredits;
+                document.getElementById("infoDays").textContent = newDays;
+            }).catch(err => {
+                alert("Error saving data: " + err);
+            });
+
+            if (challenge) {
+                set(ref(database, 'global/challenge'), challenge).catch(err => {
+                    alert("Error saving challenge: " + err);
+                });
+            }
+        };
 
         // Listen to challenge updates to update footer live
         onValue(ref(database, 'global/challenge'), snapshot => {
             const val = snapshot.exists() ? snapshot.val() : "No challenge set.";
-            document.getElementById("footerChallenge").textContent = val;
+            // Check if the element exists before setting its content
+            const footerChallenge = document.getElementById("footerChallenge");
+            if (footerChallenge) {
+                footerChallenge.textContent = val;
+            }
         });
 
         function animateWelcomeText(name) {
             const welcomeMessage = document.getElementById("welcomeMessage");
             const userWelcome = document.getElementById("userWelcome");
+
             welcomeMessage.innerHTML = "";
             userWelcome.innerHTML = "";
+
             const message = "Welcome back, ";
-            const delay = 0.12;
+            const delay = 0.12; // slower animation
 
             message.split("").forEach((char, i) => {
                 const span = document.createElement("span");
@@ -375,66 +475,50 @@
             });
         }
 
-        // --- QUICK ACCESS / SELF EDIT ---
-        window.checkQuickAccessCode = function() {
-            const code = document.getElementById("quickAccessCodeInput").value.trim();
-            if (code === "7") {
-                document.getElementById("quickUserList").style.display = "block";
-                document.getElementById("quickAccessCodeInput").style.display = "none";
-                document.getElementById("quickAccessCodeInput").nextElementSibling.style.display = "none";
-            } else { alert("Incorrect Quick Access Code!"); }
-        };
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem("savedUser");
+            if (savedUser && defaultUsers[savedUser]) {
+                currentUser = savedUser;
+                const userRef = ref(database, 'users/' + currentUser);
 
-        window.quickLoginUser = function(user) {
-            window.checkLogin(user);
-        };
-
-        window.checkSecretCode = function() {
-            const code = document.getElementById("secretCodeInput").value.trim();
-            if (code === "7") {
-                alert("Editor unlocked!");
-                document.getElementById("selfEditor").style.display = "block";
-                document.getElementById("selfCredits").value = currentUserData.credits ?? 0;
-                document.getElementById("selfDays").value = currentUserData.days ?? 0;
-                
-                get(ref(database, 'global/challenge')).then(snapshot => {
+                get(userRef).then(snapshot => {
                     if (snapshot.exists()) {
-                        document.getElementById("challengeText").value = snapshot.val();
+                        currentUserData = snapshot.val();
                     } else {
-                        document.getElementById("challengeText").value = "";
+                        currentUserData = { credits: 0, days: 0 };
+                        set(userRef, currentUserData);
                     }
-                });
-            } else { alert("Wrong secret code."); }
-        };
-
-        window.saveSelfChanges = function() {
-            const newCredits = parseInt(document.getElementById("selfCredits").value, 10);
-            const newDays = parseInt(document.getElementById("selfDays").value, 10);
-            const challenge = document.getElementById("challengeText").value.trim();
-
-            if (isNaN(newCredits) || isNaN(newDays)) {
-                alert("Please enter valid numbers."); return;
-            }
-
-            const userRef = ref(database, 'users/' + currentUser);
-            update(userRef, { credits: newCredits, days: newDays }).then(() => {
-                alert("Changes saved.");
-                currentUserData.credits = newCredits;
-                currentUserData.days = newDays;
-                document.getElementById("infoCredits").textContent = newCredits;
-                document.getElementById("infoDays").textContent = newDays;
-            }).catch(err => {
-                alert("Error saving data: " + err);
-            });
-
-            if (challenge) {
-                set(ref(database, 'global/challenge'), challenge).catch(err => {
-                    alert("Error saving challenge: " + err);
+                    showWelcome();
+                }).catch(error => {
+                    alert("Auto-login error: " + error);
                 });
             }
+        });
+
+        window.logout = function () {
+            localStorage.removeItem("savedUser");
+            currentUser = null;
+            currentUserData = null;
+
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("loginBox").style.display = "block";
+            document.getElementById("welcomeBox").style.display = "none";
+            document.getElementById("reportForm").style.display = "none";
+            document.getElementById("selfEditArea").style.display = "none";
+            document.getElementById("selfEditor").style.display = "none";
+            document.getElementById("infoBox").style.display = "none";
+            document.getElementById("logoutButton").style.display = "none";
+            document.getElementById("shopContainer").style.display = "none"; // Keep shop hidden on logout
+            document.getElementById("creditCodeBox").style.display = "none";
+            document.querySelector('.btnshop').style.display = "none"; // Hide shop open button
+
+            document.getElementById("quickAccessCodeInput").value = "";
+            document.getElementById("quickUserList").style.display = "none";
+
+            alert("You have been logged out.");
         };
 
-        // --- SHOP FUNCTIONS ---
         window.openShop = function () {
             document.getElementById("shopContainer").style.display = "block";
         };
@@ -445,18 +529,37 @@
 
         window.buyItem = function (creditsCost, daysChange) {
             if (!currentUserData) {
-                alert("You must be logged in."); return;
+                alert("You must be logged in.");
+                return;
             }
 
-            if (!infiniteCreditsActive && currentUserData.credits < creditsCost) {
-                alert("Not enough credits."); return;
+            if (infiniteCreditsActive) {
+                const newDays = (currentUserData.days ?? 0) + daysChange;
+                const userRef = ref(database, "users/" + currentUser);
+                update(userRef, { days: newDays }).then(() => {
+                    currentUserData.days = newDays;
+                    document.getElementById("infoDays").textContent = newDays;
+                    alert("Purchase successful with infinite credits!");
+                }).catch(err => {
+                    alert("Error updating data: " + err);
+                });
+                return;
             }
 
-            const newCredits = infiniteCreditsActive ? currentUserData.credits : currentUserData.credits - creditsCost;
+            if (currentUserData.credits < creditsCost) {
+                alert("Not enough credits.");
+                return;
+            }
+
+            const newCredits = currentUserData.credits - creditsCost;
             const newDays = (currentUserData.days ?? 0) + daysChange;
 
             const userRef = ref(database, "users/" + currentUser);
-            update(userRef, { credits: newCredits, days: newDays }).then(() => {
+
+            update(userRef, {
+                credits: newCredits,
+                days: newDays
+            }).then(() => {
                 currentUserData.credits = newCredits;
                 currentUserData.days = newDays;
                 document.getElementById("infoCredits").textContent = newCredits;
@@ -467,14 +570,31 @@
             });
         };
 
+        window.checkQuickAccessCode = function() {
+            const code = document.getElementById("quickAccessCodeInput").value.trim();
+            if (code === "7") {
+                document.getElementById("quickUserList").style.display = "block";
+                document.getElementById("quickAccessCodeInput").style.display = "none";
+                document.getElementById("quickAccessCodeInput").nextElementSibling.style.display = "none";
+            } else {
+                alert("Incorrect Quick Access Code!");
+            }
+        };
+
+        window.quickLoginUser = function(user) {
+            window.checkLogin(user);
+        };
+
         window.buyInfiniteCredits = function() {
             const creditsCost = 15000;
             if (!currentUserData) {
-                alert("You must be logged in to buy this."); return;
+                alert("You must be logged in to buy this.");
+                return;
             }
 
             if (currentUserData.credits < creditsCost) {
-                alert("You need " + creditsCost + " credits to buy Infinite Credits!"); return;
+                alert("You need " + creditsCost + " credits to buy Infinite Credits!");
+                return;
             }
 
             const newCredits = currentUserData.credits - creditsCost;
@@ -483,206 +603,135 @@
             update(userRef, { credits: newCredits }).then(() => {
                 currentUserData.credits = newCredits;
                 document.getElementById("infoCredits").textContent = newCredits;
-                alert("Infinite Credits activated for 2 minutes!"); // Updated alert message
-                
+                alert("Infinite Credits activated for 2.5 seconds!");
+
                 infiniteCreditsActive = true;
                 setTimeout(() => {
                     infiniteCreditsActive = false;
                     alert("Infinite Credits deactivated.");
-                }, 120000); // 2 minutes (120 seconds * 1000 ms/sec)
+                }, 2500); // 2.5 seconds
             }).catch(err => {
                 alert("Error purchasing Infinite Credits: " + err);
             });
         };
 
-        // --- NEW TRANSFER LOGIC ---
+        // --- Credit Code Generation ---
+        window.generateCreditCode = function() {
+            const amountToCode = parseInt(document.getElementById("createCodeAmount").value, 10);
 
-        // Function to toggle between send/receive mode in the transfer interface
-        window.toggleTransferMode = (mode) => {
-            document.getElementById('senderView').style.display = (mode === 'send') ? 'block' : 'none';
-            document.getElementById('receiverView').style.display = (mode === 'receive') ? 'block' : 'none';
-            document.getElementById('statusView').style.display = 'none'; // Hide status when switching modes
-            document.getElementById('transferCodeInput').value = ''; // Clear input when switching
-            document.getElementById('transferAmount').value = ''; // Clear input when switching
-            if (activeTransferCode) cleanupTransfer(); // Clean up any lingering transfer data
-        };
-
-        // Function to generate a transfer code
-        window.generateTransferCode = async () => {
-            const amount = parseInt(document.getElementById('transferAmount').value, 10);
-            if (!amount || amount <= 0) { alert("Please enter a valid amount."); return; }
-            if (currentUserData.credits < amount) { alert("You don't have enough credits for this transfer."); return; }
-            
-            // Generate a unique 4-digit code
-            let code = '';
-            do {
-                code = Math.floor(1000 + Math.random() * 9000).toString();
-                // Check if code already exists in Firebase to avoid collisions (unlikely but good practice)
-                const snapshot = await get(ref(database, 'transfers/' + code));
-                if (!snapshot.exists()) break;
-            } while (true);
-
-            activeTransferCode = code;
-            const transferRef = ref(database, 'transfers/' + activeTransferCode);
-
-            const transaction = {
-                sender: currentUser,
-                amount: amount,
-                status: 'pending',
-                timestamp: Date.now()
-            };
-
-            try {
-                await set(transferRef, transaction);
-                // Deduct credits from sender immediately upon code generation
-                const senderNewCredits = currentUserData.credits - amount;
-                await update(ref(database, `users/${currentUser}`), { credits: senderNewCredits });
-                currentUserData.credits = senderNewCredits;
-                document.getElementById("infoCredits").textContent = senderNewCredits;
-
-                document.getElementById('senderView').style.display = 'none';
-                document.getElementById('receiverView').style.display = 'none';
-                document.getElementById('statusView').style.display = 'block';
-                document.getElementById('statusMessage').innerText = "Give this code to the recipient. It will expire in 2 minutes.";
-                document.getElementById('transferCodeDisplay').innerText = activeTransferCode;
-
-                // Listen for status changes (e.g., when receiver claims it)
-                transferListener = onValue(transferRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data && data.status === 'completed') {
-                        alert(`✅ Transfer successful! ${data.amount} credits sent to ${data.receiver}.`);
-                        // No need to deduct again, already done above
-                        cleanupTransfer(); // Clean up on successful completion
-                    } else if (!data) { // If data is null, it means the entry was removed (canceled/expired)
-                        alert("The transfer code has been canceled or expired by the sender/system.");
-                        cleanupTransfer(); // Clean up on removal
-                    }
-                });
-
-                // Expire the transfer automatically after 2 minutes
-                setTimeout(() => {
-                    if (activeTransferCode === code) { // Check if this specific transfer is still active
-                        get(transferRef).then(snapshot => {
-                            if (snapshot.exists() && snapshot.val().status === 'pending') {
-                                alert("Your generated transfer code has expired.");
-                                cleanupTransfer(); // Clean up if still pending
-                            }
-                        });
-                    }
-                }, 120000); // 2 minutes = 120000 milliseconds
-
-            } catch (e) {
-                alert("Error generating transfer: " + e.message);
-                cleanupTransfer(); // Ensure cleanup on error
+            if (!currentUser) {
+                alert("You must be logged in.");
+                return;
             }
-        };
-
-        // Function to claim a transfer
-        window.claimTransfer = async () => {
-            const code = document.getElementById('transferCodeInput').value.trim();
-            if (code.length !== 4) { alert("Please enter the 4-digit code."); return; }
-
-            const transferRef = ref(database, 'transfers/' + code);
-            let snapshot;
-            try {
-                snapshot = await get(transferRef);
-            } catch (e) {
-                alert("Error checking transfer code: " + e.message);
+            if (!amountToCode || amountToCode <= 0) {
+                alert("Please enter a valid, positive amount.");
+                return;
+            }
+            if (currentUserData.credits < amountToCode) {
+                alert("You don't have enough credits to create this code.");
                 return;
             }
 
-            if (!snapshot.exists()) { alert("Invalid or expired code."); return; }
+            // Generate a 5-digit numeric code
+            const newCode = String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+            
+            // Define the data for the new code
+            const codeData = {
+                amount: amountToCode,
+                createdBy: currentUser,
+                createdAt: Date.now(),
+                expiresAt: Date.now() + (24 * 60 * 60 * 1000) // Expires in 24 hours
+            };
 
-            const transaction = snapshot.val();
-            if (transaction.status !== 'pending') { alert("This transfer has already been completed or canceled."); return; }
-            if (transaction.sender.toLowerCase() === currentUser.toLowerCase()) { alert("You cannot claim your own transfer."); return; }
-            
-            // Atomically update both sender and receiver credits, and mark transfer as complete
+            const senderNewCredits = currentUserData.credits - amountToCode;
+
+            // Use atomic update to deduct credits and create the code simultaneously
             const updates = {};
-            // The sender's credits were already deducted when the code was generated.
-            // We just need to ensure the sender still has the credits or at least not negative.
-            // This is a safety check; ideally, Firebase Rules would prevent negative balances.
-            // For true transaction safety, you'd use Firebase Realtime Database Transactions or Cloud Functions.
-            
-            const receiverNewCredits = (currentUserData.credits || 0) + transaction.amount;
-            updates[`users/${currentUser}/credits`] = receiverNewCredits;
-            updates[`transfers/${code}/status`] = 'completed';
-            updates[`transfers/${code}/receiver`] = currentUser;
+            updates['/users/' + currentUser + '/credits'] = senderNewCredits;
+            updates['/creditCodes/' + newCode] = codeData;
+
+            update(ref(database), updates).then(() => {
+                // Update UI
+                currentUserData.credits = senderNewCredits;
+                document.getElementById("infoCredits").textContent = senderNewCredits;
+                document.getElementById("createCodeAmount").value = ''; // Clear the input field
+
+                const generatedCodeDisplay = document.getElementById("generatedCodeDisplay");
+                generatedCodeDisplay.textContent = newCode;
+                generatedCodeDisplay.style.display = 'block'; // Show the generated code
+                alert(`Code created successfully: ${newCode}`);
+
+            }).catch(error => {
+                console.error("Error creating credit code:", error);
+                alert("Error creating credit code. Please try again.");
+            });
+        };
+
+        // --- Credit Code Redemption ---
+        window.redeemCreditCode = async function() {
+            const codeToRedeem = document.getElementById("redeemCodeInput").value.trim();
+
+            if (!currentUser) {
+                alert("You must be logged in to redeem codes.");
+                return;
+            }
+            if (!codeToRedeem) {
+                alert("Please enter a code to redeem.");
+                return;
+            }
+
+            const codeRef = ref(database, 'creditCodes/' + codeToRedeem);
 
             try {
+                const snapshot = await get(codeRef);
+
+                if (!snapshot.exists()) {
+                    alert("Invalid or already redeemed code.");
+                    return;
+                }
+
+                const codeData = snapshot.val();
+                const now = Date.now();
+
+                // Check if the code has expired
+                if (codeData.expiresAt && now > codeData.expiresAt) {
+                    alert("This code has expired.");
+                    // Optionally remove expired code to clean up database
+                    await remove(codeRef); // Removes the expired code from Firebase
+                    return;
+                }
+
+                const amount = codeData.amount;
+                const userRef = ref(database, 'users/' + currentUser);
+
+                // Fetch current user data again to ensure it's up-to-date
+                const userSnapshot = await get(userRef);
+                let currentCredits = 0;
+                if (userSnapshot.exists()) {
+                    currentCredits = userSnapshot.val().credits || 0;
+                }
+
+                const newCredits = currentCredits + amount;
+
+                // Perform atomic update: add credits to user AND remove the code
+                const updates = {};
+                updates['/users/' + currentUser + '/credits'] = newCredits;
+                updates['/creditCodes/' + codeToRedeem] = null; // Set to null to remove the code
+
                 await update(ref(database), updates);
 
-                // Update receiver's UI immediately
-                currentUserData.credits = receiverNewCredits;
-                document.getElementById("infoCredits").textContent = currentUserData.credits;
-                alert(`✅ You have received ${transaction.amount} credits from ${transaction.sender}!`);
-                toggleTransferMode('send'); // Go back to send mode
-            } catch (e) {
-                alert("Error claiming transfer: " + e.message);
-            }
-        };
-        
-        // Helper to clean up transfer state and Firebase entry
-        const cleanupTransfer = () => {
-            if (transferListener) {
-                transferListener(); // Unsubscribe from the Firebase listener
-                transferListener = null;
-            }
-            if (activeTransferCode) {
-                remove(ref(database, 'transfers/' + activeTransferCode)); // Remove from Firebase
-                activeTransferCode = null;
-            }
-            // Reset UI to default send mode
-            toggleTransferMode('send');
-        };
+                // Update client-side data and UI
+                currentUserData.credits = newCredits;
+                document.getElementById("infoCredits").textContent = newCredits;
+                document.getElementById("redeemCodeInput").value = ''; // Clear input
 
-        // Function to cancel an active transfer (sender's side)
-        window.cancelTransfer = () => {
-            if (activeTransferCode) {
-                // Return credits to sender if it was pending and deducted
-                get(ref(database, 'transfers/' + activeTransferCode)).then(snapshot => {
-                    const data = snapshot.val();
-                    if (data && data.status === 'pending') {
-                        const amountToRefund = data.amount;
-                        const userRef = ref(database, 'users/' + currentUser);
-                        get(userRef).then(userSnapshot => {
-                            const currentCredits = userSnapshot.val().credits ?? 0;
-                            update(userRef, { credits: currentCredits + amountToRefund }).then(() => {
-                                currentUserData.credits = currentCredits + amountToRefund;
-                                document.getElementById("infoCredits").textContent = currentUserData.credits;
-                                alert("Transfer canceled and credits refunded.");
-                                cleanupTransfer();
-                            }).catch(err => {
-                                alert("Error refunding credits: " + err);
-                                cleanupTransfer(); // Still clean up the transfer record
-                            });
-                        });
-                    } else {
-                        // If it's not pending (already completed/removed), just clean up locally
-                        alert("Transfer canceled.");
-                        cleanupTransfer();
-                    }
-                }).catch(err => {
-                    alert("Error checking transfer status for refund: " + err);
-                    cleanupTransfer(); // Try to clean up even on read error
-                });
-            } else {
-                toggleTransferMode('send'); // Just go back to the main send view if no active transfer
+                alert(`Code redeemed successfully! You received ${amount} credits.`);
+
+            } catch (error) {
+                console.error("Error redeeming code:", error);
+                alert("An error occurred during redemption. Please try again.");
             }
         };
-
     </script>
-    
-    <footer>
-        <p>MADE BY ZEYAD AND CHATGPT</p>
-        <p>Version 
-            <span style="color: pink; font-weight: bold; font-size: 3em;">4</span>
-            <span style="color: pink; font-weight: bold; font-size: 3em;">0</span> 
-            | Made on 5/5/2025
-        </p>
-        <p>Game Partners: zezo games</p>
-        <h1><strong>Challenge:</strong> <span id="footerChallenge">Loading...</span></h1>
-    </footer>
-
 </body>
 </html>
