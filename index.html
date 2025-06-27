@@ -12,15 +12,17 @@
     <meta name="mobile-web-app-capable" content="yes" />
 
     <style>
+        /* Base text color for the entire body */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background: url('masr.png') no-repeat center center fixed;
             background-size: cover;
-            color: white;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
-        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox {
+        /* Specific elements and containers that hold text */
+        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox, footer, #shopContainer, #welcomeBox {
             max-width: 400px;
             margin: 20px auto;
             padding: 25px;
@@ -29,7 +31,9 @@
             backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
+        /* Inputs, buttons, selects, and text areas */
         input, button, select, textarea {
             width: 100%;
             padding: 12px;
@@ -37,21 +41,30 @@
             border-radius: 50px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE, including placeholder text */
             font-size: 16px;
             backdrop-filter: blur(10px);
             box-sizing: border-box;
         }
+        /* Placeholder text color for inputs and textareas */
+        input::placeholder, textarea::placeholder {
+            color: blue; /* Ensures placeholder text is also blue */
+            opacity: 0.7; /* Adjust opacity if needed for readability */
+        }
+        /* Hover state for buttons */
         button:hover {
             background: rgba(255, 255, 255, 0.3);
-            color: #000;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
             cursor: pointer;
         }
+        /* Labels for form elements */
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
+        /* Info box in the top left */
         #infoBox {
             position: fixed;
             top: 10px;
@@ -64,24 +77,15 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: none;
-            color: white;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
-        footer {
-            max-width: 400px;
-            margin: 20px auto;
-            padding: 25px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            margin: auto;
-            width: fit-content;
-        }
+        /* Shop button */
         .btnshop {
             width: fit-content;
             margin: auto;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
+        /* Login lock icon animation */
         #loginLockIcon svg {
             overflow: visible;
         }
@@ -96,8 +100,9 @@
         }
         #loginLockIcon.open #lockShackle {
             animation: lockOpen 0.1s forwards ease-in-out;
-            stroke: limegreen;
+            stroke: blue; /* Changed from limegreen to blue - this is a stroke, not text */
         }
+        /* Fade-in and drop-in animations */
         .fade-in {
             animation: fadeInEffect 0.1s ease forwards;
         }
@@ -113,6 +118,7 @@
             display: inline-block;
             opacity: 0;
             animation: dropIn 0.6s ease forwards;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
         @keyframes dropIn {
             0% {
@@ -124,6 +130,7 @@
                 transform: translateY(0);
             }
         }
+        /* User list for quick access */
         .user-list {
             display: none;
             margin-top: 20px;
@@ -136,8 +143,8 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             display: inline-block;
             border-radius: 50px;
-            background: blue;
-            color: red;
+            background: blue; /* Background of the user buttons */
+            color: blue; /* ALL TEXT COLOR SET TO BLUE - Note: Text on a blue background will be hard to read. You might want to change the background to a lighter color for contrast. */
             font-size: 16px;
             backdrop-filter: blur(10px);
             box-sizing: border-box;
@@ -145,9 +152,9 @@
         }
         .user:hover {
             background: rgba(255, 255, 255, 0.3);
-            color: #000;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
-        /* New style for QR code container */
+        /* QR code container */
         #qrcodeContainer {
             margin-top: 20px;
             text-align: center;
@@ -155,6 +162,7 @@
             padding: 10px;
             border-radius: 10px;
             display: none; /* Hidden by default */
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
         }
         #qrcodeContainer img {
             max-width: 100%;
@@ -163,7 +171,7 @@
             margin: 0 auto;
         }
 
-        /* Styles for QR Code Scanner */
+        /* QR Code Scanner */
         #qr-reader {
             width: 100%;
             max-width: 300px; /* Limit scanner size */
@@ -178,7 +186,7 @@
         }
         #qr-reader__dashboard {
             background: rgba(255, 255, 255, 0.1);
-            color: white;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
             padding: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -196,15 +204,15 @@
     <div id="infoBox">
         Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
     </div>
-    <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
+    <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
 
     <div class="login-box" id="loginBox">
         <h2 style="text-align:center;">
             Login
             <span id="loginLockIcon" style="display:inline-block; width:24px; height:24px; vertical-align:middle; margin-left:8px;">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
-                    <path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="white" stroke-width="2" />
+                    <path id="lockShackle" d="M6 10V7a6 6 0 1112 0v3" stroke="blue" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="6" y="10" width="12" height="10" rx="2" ry="2" stroke="blue" stroke-width="2" />
                 </svg>
             </span>
         </h2>
@@ -235,7 +243,8 @@
     <div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
         <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
     </div>
-    <button class="btnshop" onclick="openShop()" style="display:none;">🛒 Open Shop</button> <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+    <button class="btnshop" onclick="openShop()" style="display:none;">🛒 Open Shop</button>
+    <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <h3>Shop</h3>
         <button class="btnshop" onclick="buyItem(500, -5)">Buy: 500 credits → -5 days</button><br>
         <button onclick="buyItem(1000, -15)">Buy: 1000 credits → -15 days</button><br>
@@ -321,7 +330,7 @@
 
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    
+
     <script type="module">
         // Import modular Firebase SDK functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
@@ -675,8 +684,8 @@
                 text: text,
                 width: 150, // Slightly larger for better scanning
                 height: 150,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
+                colorDark : "#0000FF", // Changed to blue for QR code dots
+                colorLight : "#FFFFFF",
                 correctLevel : QRCode.CorrectLevel.H
             });
         }
@@ -700,7 +709,7 @@
 
             // Generate a 5-digit numeric code
             const newCode = String(Math.floor(Math.random() * 100000)).padStart(5, '0');
-            
+
             // Define the data for the new code
             const codeData = {
                 amount: amountToCode,
@@ -722,11 +731,6 @@
                 document.getElementById("infoCredits").textContent = senderNewCredits;
                 document.getElementById("createCodeAmount").value = ''; // Clear the input field
 
-                // --- Removed: Displaying the numeric code ---
-                // const generatedCodeDisplay = document.getElementById("generatedCodeDisplay");
-                // generatedCodeDisplay.textContent = newCode;
-                // generatedCodeDisplay.style.display = 'block'; 
-                
                 alert(`QR Code generated for ${amountToCode} credits!`);
 
                 // --- Generate QR Code for the newCode ---
@@ -743,11 +747,11 @@
             const codeToRedeem = codeToRedeemParam || document.getElementById("redeemCodeInput").value.trim();
 
             if (!currentUser) {
-                alert("You must be logged in to redeem codes.");
+                alert("You must be logged in to redeem a code.");
                 return;
             }
             if (!codeToRedeem) {
-                alert("Please enter a code to redeem, or scan one.");
+                alert("Please enter a code or scan a QR code.");
                 return;
             }
 
@@ -755,144 +759,100 @@
 
             try {
                 const snapshot = await get(codeRef);
-
                 if (!snapshot.exists()) {
-                    alert("Invalid or already redeemed code.");
+                    alert("Invalid or expired credit code.");
                     return;
                 }
 
                 const codeData = snapshot.val();
-                const now = Date.now();
-
-                // Check if the code has expired
-                if (codeData.expiresAt && now > codeData.expiresAt) {
-                    alert("This code has expired.");
-                    // Optionally remove expired code to clean up database
-                    await remove(codeRef); // Removes the expired code from Firebase
+                if (codeData.expiresAt && Date.now() > codeData.expiresAt) {
+                    alert("This credit code has expired.");
+                    // Optionally remove expired code from Firebase
+                    remove(codeRef);
                     return;
                 }
 
-                const amount = codeData.amount;
-                const userRef = ref(database, 'users/' + currentUser);
+                const creditsToAdd = codeData.amount;
+                const newCredits = (currentUserData.credits ?? 0) + creditsToAdd;
 
-                // Fetch current user data again to ensure it's up-to-date
-                const userSnapshot = await get(userRef);
-                let currentCredits = 0;
-                if (userSnapshot.exists()) {
-                    currentCredits = userSnapshot.val().credits || 0;
-                }
-
-                const newCredits = currentCredits + amount;
-
-                // Perform atomic update: add credits to user AND remove the code
+                // Use atomic update for the current user's credits and to delete the code
                 const updates = {};
                 updates['/users/' + currentUser + '/credits'] = newCredits;
-                updates['/creditCodes/' + codeToRedeem] = null; // Set to null to remove the code
+                updates['/creditCodes/' + codeToRedeem] = null; // Delete the code after redemption
 
                 await update(ref(database), updates);
 
-                // Update client-side data and UI
                 currentUserData.credits = newCredits;
                 document.getElementById("infoCredits").textContent = newCredits;
-                document.getElementById("redeemCodeInput").value = ''; // Clear input
+                document.getElementById("redeemCodeInput").value = ''; // Clear input field
 
-                // Clear the QR code on successful redemption
-                document.getElementById("qrcodeContainer").innerHTML = '';
-                document.getElementById("qrcodeContainer").style.display = 'none';
-
-                alert(`Code redeemed successfully! You received ${amount} credits.`);
-
-                // Stop the scanner after successful redemption
-                stopQrCodeScanner();
+                alert(`Successfully redeemed ${creditsToAdd} credits! Your new balance is ${newCredits}.`);
 
             } catch (error) {
-                console.error("Error redeeming code:", error);
-                alert("An error occurred during redemption. Please try again.");
+                console.error("Error redeeming credit code:", error);
+                alert("Error redeeming credit code. Please try again.");
             }
         };
-        
-        // Ensure QR code is cleared when the amount changes for creation
-        document.getElementById("createCodeAmount").addEventListener('input', () => {
-            document.getElementById("qrcodeContainer").innerHTML = '';
-            document.getElementById("qrcodeContainer").style.display = 'none';
-        });
 
-        // --- QR Code Scanner Functions (using html5-qrcode) ---
+        // --- QR Code Scanner Functions ---
         window.startQrCodeScanner = function() {
-            // Hide manual input and button, show scanner related elements
-            document.getElementById("redeemCodeInput").style.display = 'none';
-            document.getElementById("redeemManualButton").style.display = 'none';
-            document.getElementById("startScannerButton").style.display = 'none';
-            document.getElementById("stopScannerButton").style.display = 'block';
-            document.getElementById("qr-reader").style.display = 'block';
-
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("qr-reader");
             }
 
+            const qrReaderDiv = document.getElementById('qr-reader');
+            qrReaderDiv.style.display = 'block';
+            document.getElementById('startScannerButton').style.display = 'none';
+            document.getElementById('stopScannerButton').style.display = 'block';
+            document.getElementById('redeemCodeInput').style.display = 'block'; // Show manual input as well
+            document.getElementById('redeemManualButton').style.display = 'block';
+
             html5QrCode.start(
-                { facingMode: "environment" }, // Prefer rear camera
+                { facingMode: "environment" }, // Prefer back camera
                 {
                     fps: 10,    // frames per second
-                    qrbox: { width: 250, height: 250 }  // scan box size
+                    qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
                 },
                 (decodedText, decodedResult) => {
-                    // Success callback when QR code is detected
-                    console.log(`Code matched = ${decodedText}`, decodedResult);
-                    // Automatically attempt to redeem the scanned code
-                    redeemCreditCode(decodedText);
+                    // console.log(`QR Code detected: ${decodedText}`);
+                    if (decodedText) {
+                        html5QrCode.stop().then(() => {
+                            // console.log("QR Code scanner stopped.");
+                            document.getElementById('qr-reader').style.display = 'none';
+                            document.getElementById('stopScannerButton').style.display = 'none';
+                            window.redeemCreditCode(decodedText); // Redeem the scanned code
+                        }).catch(err => {
+                            console.error("Error stopping scanner:", err);
+                        });
+                    }
                 },
                 (errorMessage) => {
-                    // Error callback, can be left empty or log for debugging
-                    // console.warn(`QR Code no match: ${errorMessage}`);
+                    // console.warn(`QR Code scanning error: ${errorMessage}`);
                 }
             ).catch((err) => {
-                console.error(`Unable to start scanning: ${err}`);
-                alert("Error starting camera: " + err + ". Please ensure camera permissions are granted.");
-                // Fallback to manual input if scanner fails to start
-                document.getElementById("qr-reader").style.display = 'none';
-                document.getElementById("startScannerButton").style.display = 'block';
-                document.getElementById("stopScannerButton").style.display = 'none';
-                document.getElementById("redeemCodeInput").style.display = 'block';
-                document.getElementById("redeemManualButton").style.display = 'block';
+                console.error(`Unable to start QR Code scanner: ${err}`);
+                alert("Error starting QR scanner. Please ensure camera access is granted.");
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('startScannerButton').style.display = 'block';
+                document.getElementById('stopScannerButton').style.display = 'none';
             });
         };
 
         window.stopQrCodeScanner = function() {
             if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().then((ignore) => {
-                    console.log("QR Code scanning stopped.");
-                    // Hide scanner elements, show manual input and button
-                    document.getElementById("qr-reader").style.display = 'none';
-                    document.getElementById("startScannerButton").style.display = 'block';
-                    document.getElementById("stopScannerButton").style.display = 'none';
-                    document.getElementById("redeemCodeInput").style.display = 'block';
-                    document.getElementById("redeemManualButton").style.display = 'block';
-                }).catch((err) => {
-                    console.error("Error stopping QR scanner:", err);
-                    alert("Error stopping scanner. You may need to refresh the page.");
+                html5QrCode.stop().then(() => {
+                    // console.log("QR Code scanner stopped.");
+                    document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('startScannerButton').style.display = 'block';
+                    document.getElementById('stopScannerButton').style.display = 'none';
+                    document.getElementById('redeemCodeInput').style.display = 'block';
+                    document.getElementById('redeemManualButton').style.display = 'block';
+                }).catch(err => {
+                    console.error("Error stopping scanner:", err);
                 });
-            } else {
-                 // If scanner wasn't running, just reset UI
-                document.getElementById("qr-reader").style.display = 'none';
-                document.getElementById("startScannerButton").style.display = 'block';
-                document.getElementById("stopScannerButton").style.display = 'none';
-                document.getElementById("redeemCodeInput").style.display = 'block';
-                document.getElementById("redeemManualButton").style.display = 'block';
             }
         };
 
-        // When the Credit Code Box is shown, ensure scanner buttons are set up correctly
-        document.getElementById("creditCodeBox").addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'display' && document.getElementById("creditCodeBox").style.display === 'block') {
-                document.getElementById("startScannerButton").style.display = 'block';
-                document.getElementById("stopScannerButton").style.display = 'none';
-                document.getElementById("redeemCodeInput").style.display = 'none'; // Initially hide manual input
-                document.getElementById("redeemManualButton").style.display = 'none'; // Initially hide manual button
-            }
-        });
-
     </script>
-    
 </body>
 </html>
