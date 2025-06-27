@@ -309,6 +309,8 @@
         <button onclick="redeemCreditCode()" style="display:none;" id="redeemManualButton">Redeem Code</button>
     </div>
 
+     <button onclick="promptGiveDaysWithPin()">Give Days to User with PIN</button>
+
     <div id="selfEditArea" class="login-box" style="display:none;">
         <h3>🔒 Enter Secret Code</h3>
         <input type="password" id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" />
@@ -854,5 +856,82 @@
         };
 
     </script>
+
+    <script>
+// Existing code ...
+
+// Function to decrease days by 1 at midnight if user has days > 0
+function setupDailyDaysDecrement() {
+  const now = new Date();
+  const millisTillMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0) - now;
+
+  setTimeout(function() {
+    decrementDays();
+
+    // Then set interval to run every 24h afterwards
+    setInterval(decrementDays, 24 * 60 * 60 * 1000);
+  }, millisTillMidnight);
+}
+
+function decrementDays() {
+  if (currentUserData && currentUserData.days > 0) {
+    const userRef = ref(database, 'users/' + currentUser);
+    const newDays = currentUserData.days - 1;
+
+    update(userRef, { days: newDays }).then(() => {
+      currentUserData.days = newDays;
+      document.getElementById("infoDays").textContent = newDays;
+      console.log("Days decremented by 1 at midnight.");
+    }).catch(err => {
+      console.error("Error decrementing days:", err);
+    });
+  }
+}
+
+// Call this function after login and data loaded
+// Example: inside showWelcome() or after currentUserData is set
+setupDailyDaysDecrement();
+</script>
+<script>
+// Function to prompt PIN and give days to a selected user
+function promptGiveDaysWithPin() {
+  const pin = prompt("Enter PIN to give days:");
+  if (pin === "7") {
+    const targetUser = prompt("Enter user to give days to (layan / asser):").toLowerCase();
+    if (targetUser !== "layan" && targetUser !== "asser") {
+      alert("Invalid user.");
+      return;
+    }
+    const daysToAdd = parseInt(prompt("Enter number of days to add to " + targetUser + ":"), 10);
+    if (!isNaN(daysToAdd) && daysToAdd > 0) {
+      const userRef = ref(database, 'users/' + targetUser);
+
+      // Get current days and add
+      get(userRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          const newDays = (userData.days ?? 0) + daysToAdd;
+          update(userRef, { days: newDays }).then(() => {
+            alert("Days added successfully to " + targetUser);
+          }).catch(err => {
+            alert("Error updating days: " + err);
+          });
+        } else {
+          alert("Target user not found in database.");
+        }
+      }).catch(err => {
+        alert("Error reading user data: " + err);
+      });
+    } else {
+      alert("Invalid number of days.");
+    }
+  } else {
+    alert("Incorrect PIN.");
+  }
+}
+
+// Add this button in your HTML to trigger it:
+
+</script>
 </body>
 </html>
