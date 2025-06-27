@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CHALLENGE</title>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="pink1.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="pink1.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="masr.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="masr.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -16,11 +16,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background: url('pink1.png') no-repeat center center fixed;
+            background: url('masr.png') no-repeat center center fixed;
             background-size: cover;
             color: white;
         }
-        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox, #nfcScannerBox { /* Added #nfcScannerBox */
+        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox {
             max-width: 400px;
             margin: 20px auto;
             padding: 25px;
@@ -147,22 +147,47 @@
             background: rgba(255, 255, 255, 0.3);
             color: #000;
         }
-        /* Styles for the credit code result */
-        #generatedCodeDisplay {
+        /* New style for QR code container */
+        #qrcodeContainer {
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9); /* White background for QR code */
             padding: 10px;
-            background: rgba(0,0,0,0.3);
             border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-top: 10px;
             display: none; /* Hidden by default */
-            cursor: copy;
-            overflow-wrap: break-word; /* Ensure long codes wrap */
         }
-        #nfcScannerBox {
-            text-align: center;
-            padding: 20px;
+        #qrcodeContainer img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Styles for QR Code Scanner */
+        #qr-reader {
+            width: 100%;
+            max-width: 300px; /* Limit scanner size */
+            margin: 10px auto;
+            border-radius: 10px;
+            overflow: hidden; /* Ensures video fits rounded corners */
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default */
+        }
+        #qr-reader__dashboard {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        #qr-reader video {
+            width: 100% !important;
+            height: auto !important;
+        }
+        #startScannerButton, #stopScannerButton {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -266,23 +291,13 @@
         <label for="createCodeAmount">Amount:</label>
         <input type="number" id="createCodeAmount" placeholder="Enter amount to package in code" min="1" />
         <button onclick="generateCreditCode()">Create Code</button>
-        <div id="generatedCodeDisplay" onclick="navigator.clipboard.writeText(this.innerText); alert('Code copied to clipboard!')"></div>
-
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
+        <div id="qrcodeContainer"></div> <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
 
         <h4>Redeem a Code</h4>
-        <label for="redeemCodeInput">Code:</label>
-        <input type="text" id="redeemCodeInput" placeholder="Enter code to redeem" />
-        <button onclick="redeemCreditCode()">Redeem Code</button>
-
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
-
-        <h4>Redeem Credits with NFC</h4>
-        <button onclick="startNFCScan()">Scan NFC Code</button>
-        <div id="nfcScannerBox" style="display:none;">
-            <p>Ready to scan: Tap an NFC tag to your device now...</p>
-            <button onclick="stopNFCScan()">Stop Scan</button>
-        </div>
+        <button id="startScannerButton" onclick="startQrCodeScanner()">Scan QR Code</button>
+        <button id="stopScannerButton" onclick="stopQrCodeScanner()" style="display:none;">Stop Scanner</button>
+        <div id="qr-reader"></div> <input type="text" id="redeemCodeInput" placeholder="Or enter code manually" style="display:none;"/>
+        <button onclick="redeemCreditCode()" style="display:none;" id="redeemManualButton">Redeem Code</button>
     </div>
 
     <div id="selfEditArea" class="login-box" style="display:none;">
@@ -304,6 +319,9 @@
         <button onclick="saveSelfChanges()">Save My Changes</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
     <script type="module">
         // Import modular Firebase SDK functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
@@ -335,7 +353,9 @@
         let currentUser = null;
         let currentUserData = null;
         let infiniteCreditsActive = false; // Flag to track infinite credits
-        let nfcReader = null; // Variable to hold the NDEFReader instance
+
+        // HTML5-QRCode instance
+        let html5QrCode = null;
 
         // Login function (original, with password check)
         window.checkLogin = function (usernameOverride = null) { // Added usernameOverride parameter
@@ -529,9 +549,20 @@
             document.getElementById("quickAccessCodeInput").value = "";
             document.getElementById("quickUserList").style.display = "none";
 
-            // NFC-specific cleanup on logout
-            stopNFCScan(); // Ensure any active NFC scan is stopped
-            document.getElementById("nfcScannerBox").style.display = "none";
+            // Clear the QR code on logout
+            document.getElementById("qrcodeContainer").innerHTML = '';
+            document.getElementById("qrcodeContainer").style.display = 'none';
+
+            // Hide scanner elements
+            document.getElementById("qr-reader").style.display = 'none';
+            document.getElementById("startScannerButton").style.display = 'block';
+            document.getElementById("stopScannerButton").style.display = 'none';
+            document.getElementById("redeemCodeInput").style.display = 'none';
+            document.getElementById("redeemManualButton").style.display = 'none';
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error("Error stopping scanner on logout:", err));
+            }
+
 
             alert("You have been logged out.");
         };
@@ -619,7 +650,6 @@
 
             update(userRef, { credits: newCredits }).then(() => {
                 currentUserData.credits = newCredits;
-                currentUserData.credits = newCredits;
                 document.getElementById("infoCredits").textContent = newCredits;
                 alert("Infinite Credits activated for 2.5 seconds!");
 
@@ -632,6 +662,24 @@
                 alert("Error purchasing Infinite Credits: " + err);
             });
         };
+
+        // --- QR Code Generation Function ---
+        function generateQRCode(text) {
+            const qrcodeContainer = document.getElementById("qrcodeContainer");
+            qrcodeContainer.innerHTML = ""; // Clear any existing QR code
+            // Show the QR code container
+            qrcodeContainer.style.display = 'block';
+
+            // Create a new QRCode instance
+            new QRCode(qrcodeContainer, {
+                text: text,
+                width: 150, // Slightly larger for better scanning
+                height: 150,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
 
         // --- Credit Code Generation ---
         window.generateCreditCode = function() {
@@ -674,10 +722,15 @@
                 document.getElementById("infoCredits").textContent = senderNewCredits;
                 document.getElementById("createCodeAmount").value = ''; // Clear the input field
 
-                const generatedCodeDisplay = document.getElementById("generatedCodeDisplay");
-                generatedCodeDisplay.textContent = newCode;
-                generatedCodeDisplay.style.display = 'block'; // Show the generated code
-                alert(`Code created successfully: ${newCode}`);
+                // --- Removed: Displaying the numeric code ---
+                // const generatedCodeDisplay = document.getElementById("generatedCodeDisplay");
+                // generatedCodeDisplay.textContent = newCode;
+                // generatedCodeDisplay.style.display = 'block'; 
+                
+                alert(`QR Code generated for ${amountToCode} credits!`);
+
+                // --- Generate QR Code for the newCode ---
+                generateQRCode(newCode);
 
             }).catch(error => {
                 console.error("Error creating credit code:", error);
@@ -685,16 +738,16 @@
             });
         };
 
-        // --- Credit Code Redemption ---
-        window.redeemCreditCode = async function() {
-            const codeToRedeem = document.getElementById("redeemCodeInput").value.trim();
+        // --- Credit Code Redemption (modified to accept scanned code) ---
+        window.redeemCreditCode = async function(codeToRedeemParam = null) { // Added parameter
+            const codeToRedeem = codeToRedeemParam || document.getElementById("redeemCodeInput").value.trim();
 
             if (!currentUser) {
                 alert("You must be logged in to redeem codes.");
                 return;
             }
             if (!codeToRedeem) {
-                alert("Please enter a code to redeem.");
+                alert("Please enter a code to redeem, or scan one.");
                 return;
             }
 
@@ -743,102 +796,102 @@
                 document.getElementById("infoCredits").textContent = newCredits;
                 document.getElementById("redeemCodeInput").value = ''; // Clear input
 
+                // Clear the QR code on successful redemption
+                document.getElementById("qrcodeContainer").innerHTML = '';
+                document.getElementById("qrcodeContainer").style.display = 'none';
+
                 alert(`Code redeemed successfully! You received ${amount} credits.`);
+
+                // Stop the scanner after successful redemption
+                stopQrCodeScanner();
 
             } catch (error) {
                 console.error("Error redeeming code:", error);
                 alert("An error occurred during redemption. Please try again.");
             }
         };
+        
+        // Ensure QR code is cleared when the amount changes for creation
+        document.getElementById("createCodeAmount").addEventListener('input', () => {
+            document.getElementById("qrcodeContainer").innerHTML = '';
+            document.getElementById("qrcodeContainer").style.display = 'none';
+        });
 
-        // --- NFC Functions ---
-        window.startNFCScan = async function() {
-            if (!('NDEFReader' in window)) {
-                alert("Web NFC is not supported on this device/browser. Please try on a modern Android device with Chrome.");
-                return;
+        // --- QR Code Scanner Functions (using html5-qrcode) ---
+        window.startQrCodeScanner = function() {
+            // Hide manual input and button, show scanner related elements
+            document.getElementById("redeemCodeInput").style.display = 'none';
+            document.getElementById("redeemManualButton").style.display = 'none';
+            document.getElementById("startScannerButton").style.display = 'none';
+            document.getElementById("stopScannerButton").style.display = 'block';
+            document.getElementById("qr-reader").style.display = 'block';
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
             }
 
-            if (!currentUser) {
-                alert("Please log in before scanning an NFC code.");
-                return;
-            }
-
-            try {
-                if (nfcReader) { // Stop any existing reader instance
-                    try {
-                        await nfcReader.cancelScan();
-                        console.log("Existing NFC scan cancelled.");
-                    } catch (cancelError) {
-                        console.warn("Error cancelling existing NFC scan:", cancelError);
-                    }
+            html5QrCode.start(
+                { facingMode: "environment" }, // Prefer rear camera
+                {
+                    fps: 10,    // frames per second
+                    qrbox: { width: 250, height: 250 }  // scan box size
+                },
+                (decodedText, decodedResult) => {
+                    // Success callback when QR code is detected
+                    console.log(`Code matched = ${decodedText}`, decodedResult);
+                    // Automatically attempt to redeem the scanned code
+                    redeemCreditCode(decodedText);
+                },
+                (errorMessage) => {
+                    // Error callback, can be left empty or log for debugging
+                    // console.warn(`QR Code no match: ${errorMessage}`);
                 }
-
-                nfcReader = new NDEFReader();
-                await nfcReader.scan(); // Start scanning for NFC tags
-
-                document.getElementById("nfcScannerBox").style.display = "block";
-                console.log("Ready to scan: Tap an NFC tag to your device now...");
-
-
-                nfcReader.onreading = async ({ message, serialNumber }) => {
-                    console.log("NFC tag detected. Serial Number:", serialNumber);
-                    let creditCodeFromNFC = null;
-
-                    // Loop through NDEF records to find a text record containing our code
-                    for (const record of message.records) {
-                        if (record.recordType === "text") {
-                            const textDecoder = new TextDecoder(record.encoding);
-                            creditCodeFromNFC = textDecoder.decode(record.data);
-                            console.log(`Credit code found on tag: ${creditCodeFromNFC}`);
-                            break; // Stop after finding the first text record
-                        }
-                    }
-
-                    if (creditCodeFromNFC) {
-                        // Automatically set the input value and attempt to redeem
-                        document.getElementById("redeemCodeInput").value = creditCodeFromNFC;
-                        alert(`NFC Tag Read! Attempting to redeem code: ${creditCodeFromNFC}`);
-                        await redeemCreditCode(); // Call your existing redemption function
-                        stopNFCScan(); // Stop scanning after successful read
-                    } else {
-                        alert("No valid credit code found on this NFC tag. Make sure it's correctly formatted.");
-                    }
-                };
-
-                nfcReader.onreadingerror = (event) => {
-                    console.error("NFC read error:", event);
-                    alert("Error reading NFC tag. Please try again or ensure the tag is valid. Error: " + event.message);
-                    stopNFCScan(); // Stop on error
-                };
-
-            } catch (error) {
-                console.error("Error setting up NFC scan:", error);
-                if (error.name === 'NotAllowedError') {
-                    alert("NFC permission denied. Please allow NFC access in your browser settings.");
-                } else if (error.name === 'SecurityError') {
-                    alert("NFC access requires a secure context (HTTPS) and user gesture. Please ensure your site is on HTTPS.");
-                } else {
-                    alert(`Could not start NFC scan: ${error.message}. Ensure NFC is enabled on your device.`);
-                }
-                stopNFCScan(); // Ensure cleanup if setup fails
-            }
+            ).catch((err) => {
+                console.error(`Unable to start scanning: ${err}`);
+                alert("Error starting camera: " + err + ". Please ensure camera permissions are granted.");
+                // Fallback to manual input if scanner fails to start
+                document.getElementById("qr-reader").style.display = 'none';
+                document.getElementById("startScannerButton").style.display = 'block';
+                document.getElementById("stopScannerButton").style.display = 'none';
+                document.getElementById("redeemCodeInput").style.display = 'block';
+                document.getElementById("redeemManualButton").style.display = 'block';
+            });
         };
 
-        window.stopNFCScan = function() {
-            if (nfcReader) {
-                nfcReader.cancelScan().then(() => {
-                    console.log("NFC scan cancelled successfully.");
-                    document.getElementById("nfcScannerBox").style.display = "none";
-                    nfcReader = null; // Clear the instance
-                }).catch(error => {
-                    console.warn("Error cancelling NFC scan:", error);
-                    document.getElementById("nfcScannerBox").style.display = "none";
-                    nfcReader = null; // Still clear instance even if cancel fails
+        window.stopQrCodeScanner = function() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then((ignore) => {
+                    console.log("QR Code scanning stopped.");
+                    // Hide scanner elements, show manual input and button
+                    document.getElementById("qr-reader").style.display = 'none';
+                    document.getElementById("startScannerButton").style.display = 'block';
+                    document.getElementById("stopScannerButton").style.display = 'none';
+                    document.getElementById("redeemCodeInput").style.display = 'block';
+                    document.getElementById("redeemManualButton").style.display = 'block';
+                }).catch((err) => {
+                    console.error("Error stopping QR scanner:", err);
+                    alert("Error stopping scanner. You may need to refresh the page.");
                 });
             } else {
-                document.getElementById("nfcScannerBox").style.display = "none";
+                 // If scanner wasn't running, just reset UI
+                document.getElementById("qr-reader").style.display = 'none';
+                document.getElementById("startScannerButton").style.display = 'block';
+                document.getElementById("stopScannerButton").style.display = 'none';
+                document.getElementById("redeemCodeInput").style.display = 'block';
+                document.getElementById("redeemManualButton").style.display = 'block';
             }
         };
+
+        // When the Credit Code Box is shown, ensure scanner buttons are set up correctly
+        document.getElementById("creditCodeBox").addEventListener('transitionend', (event) => {
+            if (event.propertyName === 'display' && document.getElementById("creditCodeBox").style.display === 'block') {
+                document.getElementById("startScannerButton").style.display = 'block';
+                document.getElementById("stopScannerButton").style.display = 'none';
+                document.getElementById("redeemCodeInput").style.display = 'none'; // Initially hide manual input
+                document.getElementById("redeemManualButton").style.display = 'none'; // Initially hide manual button
+            }
+        });
+
     </script>
     
 </body>
