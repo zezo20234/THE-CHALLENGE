@@ -144,7 +144,7 @@
             display: inline-block;
             border-radius: 50px;
             background: blue; /* Background of the user buttons */
-            color: white; /* Changed text to white for better contrast on a blue background */
+            color: blue; /* ALL TEXT COLOR SET TO BLUE - Note: Text on a blue background will be hard to read. You might want to change the background to a lighter color for contrast. */
             font-size: 16px;
             backdrop-filter: blur(10px);
             box-sizing: border-box;
@@ -171,78 +171,32 @@
             margin: 0 auto;
         }
 
-        /* --- Fullscreen QR Code Scanner Styles --- */
+        /* QR Code Scanner */
         #qr-reader {
             width: 100%;
-            max-width: 300px; /* Default max-width for non-fullscreen state */
+            max-width: 300px; /* Limit scanner size */
             margin: 10px auto;
             border-radius: 10px;
-            overflow: hidden; 
+            overflow: hidden; /* Ensures video fits rounded corners */
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: none; /* Hidden by default */
-            position: relative; /* Needed for positioning the stop button */
         }
-        
-        #qr-reader.fullscreen-scanner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            max-width: none;
-            margin: 0;
-            border-radius: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        body.scanner-active {
-            overflow: hidden; /* Prevent scrolling while scanner is active */
-        }
-
         #qr-reader__dashboard {
             background: rgba(255, 255, 255, 0.1);
             color: blue; /* ALL TEXT COLOR SET TO BLUE */
             padding: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         #qr-reader video {
             width: 100% !important;
             height: auto !important;
         }
-
-        #qr-reader.fullscreen-scanner video {
-             width: 100vw !important;
-             height: 100vh !important;
-             object-fit: cover;
-        }
-        
-        #stopScannerButton {
+        #startScannerButton, #stopScannerButton {
             margin-top: 10px;
-            /* New styles for when it's in the fullscreen scanner */
-            z-index: 1001; /* Ensure it's above the video feed */
         }
-
-        #qr-reader.fullscreen-scanner #stopScannerButton {
-             position: fixed;
-             bottom: 30px;
-             left: 50%;
-             transform: translateX(-50%);
-             width: 80%;
-             max-width: 300px;
-             background: rgba(255, 0, 0, 0.7);
-             color: white;
-             border: 1px solid rgba(255,255,255,0.5);
-        }
-        
     </style>
 </head>
 <body>
@@ -350,13 +304,8 @@
 
         <h4>Redeem a Code</h4>
         <button id="startScannerButton" onclick="startQrCodeScanner()">Scan QR Code</button>
-        
-        <!-- Scanner and its stop button are now grouped. -->
-        <div id="qr-reader">
-            <button id="stopScannerButton" onclick="stopQrCodeScanner()" style="display:none;">Stop Scanner</button>
-        </div> 
-
-        <input type="text" id="redeemCodeInput" placeholder="Or enter code manually" style="display:none;"/>
+        <button id="stopScannerButton" onclick="stopQrCodeScanner()" style="display:none;">Stop Scanner</button>
+        <div id="qr-reader"></div> <input type="text" id="redeemCodeInput" placeholder="Or enter code manually" style="display:none;"/>
         <button onclick="redeemCreditCode()" style="display:none;" id="redeemManualButton">Redeem Code</button>
     </div>
 
@@ -589,11 +538,6 @@
         });
 
         window.logout = function () {
-            // If scanner is active, stop it first
-            if (html5QrCode && html5QrCode.isScanning) {
-                stopQrCodeScanner();
-            }
-
             localStorage.removeItem("savedUser");
             currentUser = null;
             currentUserData = null;
@@ -617,6 +561,17 @@
             // Clear the QR code on logout
             document.getElementById("qrcodeContainer").innerHTML = '';
             document.getElementById("qrcodeContainer").style.display = 'none';
+
+            // Hide scanner elements
+            document.getElementById("qr-reader").style.display = 'none';
+            document.getElementById("startScannerButton").style.display = 'block';
+            document.getElementById("stopScannerButton").style.display = 'none';
+            document.getElementById("redeemCodeInput").style.display = 'none';
+            document.getElementById("redeemManualButton").style.display = 'none';
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error("Error stopping scanner on logout:", err));
+            }
+
 
             alert("You have been logged out.");
         };
@@ -774,8 +729,8 @@
                 // Update UI
                 currentUserData.credits = senderNewCredits;
                 document.getElementById("infoCredits").textContent = senderNewCredits;
-
                 document.getElementById("createCodeAmount").value = ''; // Clear the input field
+
                 alert(`QR Code generated for ${amountToCode} credits!`);
 
                 // --- Generate QR Code for the newCode ---
@@ -839,38 +794,36 @@
             }
         };
 
-        // --- Fullscreen QR Code Scanner Functions ---
+        // --- QR Code Scanner Functions ---
         window.startQrCodeScanner = function() {
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("qr-reader");
             }
 
             const qrReaderDiv = document.getElementById('qr-reader');
-            qrReaderDiv.style.display = 'flex'; // Use flex for centering
-            qrReaderDiv.classList.add('fullscreen-scanner');
-            document.body.classList.add('scanner-active');
-
+            qrReaderDiv.style.display = 'block';
             document.getElementById('startScannerButton').style.display = 'none';
             document.getElementById('stopScannerButton').style.display = 'block';
-            document.getElementById('redeemCodeInput').style.display = 'none'; 
-            document.getElementById('redeemManualButton').style.display = 'none';
+            document.getElementById('redeemCodeInput').style.display = 'block'; // Show manual input as well
+            document.getElementById('redeemManualButton').style.display = 'block';
 
             html5QrCode.start(
                 { facingMode: "environment" }, // Prefer back camera
                 {
-                    fps: 10,
-                    // Make the scanning box responsive
-                    qrbox: (viewfinderWidth, viewfinderHeight) => {
-                        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        const qrBoxSize = Math.floor(minEdge * 0.7);
-                        return { width: qrBoxSize, height: qrBoxSize };
-                    }
+                    fps: 10,    // frames per second
+                    qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
                 },
                 (decodedText, decodedResult) => {
+                    // console.log(`QR Code detected: ${decodedText}`);
                     if (decodedText) {
-                        // Stop the scanner and redeem the code
-                        window.stopQrCodeScanner();
-                        window.redeemCreditCode(decodedText);
+                        html5QrCode.stop().then(() => {
+                            // console.log("QR Code scanner stopped.");
+                            document.getElementById('qr-reader').style.display = 'none';
+                            document.getElementById('stopScannerButton').style.display = 'none';
+                            window.redeemCreditCode(decodedText); // Redeem the scanned code
+                        }).catch(err => {
+                            console.error("Error stopping scanner:", err);
+                        });
                     }
                 },
                 (errorMessage) => {
@@ -879,26 +832,25 @@
             ).catch((err) => {
                 console.error(`Unable to start QR Code scanner: ${err}`);
                 alert("Error starting QR scanner. Please ensure camera access is granted.");
-                window.stopQrCodeScanner(); // Clean up UI if start fails
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('startScannerButton').style.display = 'block';
+                document.getElementById('stopScannerButton').style.display = 'none';
             });
         };
 
         window.stopQrCodeScanner = function() {
             if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().catch(err => {
+                html5QrCode.stop().then(() => {
+                    // console.log("QR Code scanner stopped.");
+                    document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('startScannerButton').style.display = 'block';
+                    document.getElementById('stopScannerButton').style.display = 'none';
+                    document.getElementById('redeemCodeInput').style.display = 'block';
+                    document.getElementById('redeemManualButton').style.display = 'block';
+                }).catch(err => {
                     console.error("Error stopping scanner:", err);
                 });
             }
-            
-            const qrReaderDiv = document.getElementById('qr-reader');
-            qrReaderDiv.style.display = 'none';
-            qrReaderDiv.classList.remove('fullscreen-scanner');
-            document.body.classList.remove('scanner-active');
-
-            document.getElementById('startScannerButton').style.display = 'block';
-            document.getElementById('stopScannerButton').style.display = 'none';
-            document.getElementById('redeemCodeInput').style.display = 'block';
-            document.getElementById('redeemManualButton').style.display = 'block';
         };
 
     </script>
