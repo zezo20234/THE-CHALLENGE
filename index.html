@@ -28,7 +28,7 @@
             padding: 25px;
             border-radius: 30px;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(50px) saturate(180%);
+            backdrop-filter: blur(100px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             color: blue; /* ALL TEXT COLOR SET TO BLUE */
@@ -728,4 +728,131 @@
             update(ref(database), updates).then(() => {
                 // Update UI
                 currentUserData.credits = senderNewCredits;
-                documen
+                document.getElementById("infoCredits").textContent = senderNewCredits;
+                document.getElementById("createCodeAmount").value = ''; // Clear the input field
+
+                alert(`QR Code generated for ${amountToCode} credits!`);
+
+                // --- Generate QR Code for the newCode ---
+                generateQRCode(newCode);
+
+            }).catch(error => {
+                console.error("Error creating credit code:", error);
+                alert("Error creating credit code. Please try again.");
+            });
+        };
+
+        // --- Credit Code Redemption (modified to accept scanned code) ---
+        window.redeemCreditCode = async function(codeToRedeemParam = null) { // Added parameter
+            const codeToRedeem = codeToRedeemParam || document.getElementById("redeemCodeInput").value.trim();
+
+            if (!currentUser) {
+                alert("You must be logged in to redeem a code.");
+                return;
+            }
+            if (!codeToRedeem) {
+                alert("Please enter a code or scan a QR code.");
+                return;
+            }
+
+            const codeRef = ref(database, 'creditCodes/' + codeToRedeem);
+
+            try {
+                const snapshot = await get(codeRef);
+                if (!snapshot.exists()) {
+                    alert("Invalid or expired credit code.");
+                    return;
+                }
+
+                const codeData = snapshot.val();
+                if (codeData.expiresAt && Date.now() > codeData.expiresAt) {
+                    alert("This credit code has expired.");
+                    // Optionally remove expired code from Firebase
+                    remove(codeRef);
+                    return;
+                }
+
+                const creditsToAdd = codeData.amount;
+                const newCredits = (currentUserData.credits ?? 0) + creditsToAdd;
+
+                // Use atomic update for the current user's credits and to delete the code
+                const updates = {};
+                updates['/users/' + currentUser + '/credits'] = newCredits;
+                updates['/creditCodes/' + codeToRedeem] = null; // Delete the code after redemption
+
+                await update(ref(database), updates);
+
+                currentUserData.credits = newCredits;
+                document.getElementById("infoCredits").textContent = newCredits;
+                document.getElementById("redeemCodeInput").value = ''; // Clear input field
+
+                alert(`Successfully redeemed ${creditsToAdd} credits! Your new balance is ${newCredits}.`);
+
+            } catch (error) {
+                console.error("Error redeeming credit code:", error);
+                alert("Error redeeming credit code. Please try again.");
+            }
+        };
+
+        // --- QR Code Scanner Functions ---
+        window.startQrCodeScanner = function() {
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+
+            const qrReaderDiv = document.getElementById('qr-reader');
+            qrReaderDiv.style.display = 'block';
+            document.getElementById('startScannerButton').style.display = 'none';
+            document.getElementById('stopScannerButton').style.display = 'block';
+            document.getElementById('redeemCodeInput').style.display = 'block'; // Show manual input as well
+            document.getElementById('redeemManualButton').style.display = 'block';
+
+            html5QrCode.start(
+                { facingMode: "environment" }, // Prefer back camera
+                {
+                    fps: 10,    // frames per second
+                    qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
+                },
+                (decodedText, decodedResult) => {
+                    // console.log(`QR Code detected: ${decodedText}`);
+                    if (decodedText) {
+                        html5QrCode.stop().then(() => {
+                            // console.log("QR Code scanner stopped.");
+                            document.getElementById('qr-reader').style.display = 'none';
+                            document.getElementById('stopScannerButton').style.display = 'none';
+                            window.redeemCreditCode(decodedText); // Redeem the scanned code
+                        }).catch(err => {
+                            console.error("Error stopping scanner:", err);
+                        });
+                    }
+                },
+                (errorMessage) => {
+                    // console.warn(`QR Code scanning error: ${errorMessage}`);
+                }
+            ).catch((err) => {
+                console.error(`Unable to start QR Code scanner: ${err}`);
+                alert("Error starting QR scanner. Please ensure camera access is granted.");
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('startScannerButton').style.display = 'block';
+                document.getElementById('stopScannerButton').style.display = 'none';
+            });
+        };
+
+        window.stopQrCodeScanner = function() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    // console.log("QR Code scanner stopped.");
+                    document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('startScannerButton').style.display = 'block';
+                    document.getElementById('stopScannerButton').style.display = 'none';
+                    document.getElementById('redeemCodeInput').style.display = 'block';
+                    document.getElementById('redeemManualButton').style.display = 'block';
+                }).catch(err => {
+                    console.error("Error stopping scanner:", err);
+                });
+            }
+        };
+
+    </script>
+</body>
+</html>
