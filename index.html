@@ -20,7 +20,7 @@
             background-size: cover;
             color: white;
         }
-        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox {
+        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox, #nfcScannerBox { /* Added #nfcScannerBox */
             max-width: 400px;
             margin: 20px auto;
             padding: 25px;
@@ -160,6 +160,10 @@
             cursor: copy;
             overflow-wrap: break-word; /* Ensure long codes wrap */
         }
+        #nfcScannerBox {
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -270,6 +274,15 @@
         <label for="redeemCodeInput">Code:</label>
         <input type="text" id="redeemCodeInput" placeholder="Enter code to redeem" />
         <button onclick="redeemCreditCode()">Redeem Code</button>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 20px 0;">
+
+        <h4>Redeem Credits with NFC</h4>
+        <button onclick="startNFCScan()">Scan NFC Code</button>
+        <div id="nfcScannerBox" style="display:none;">
+            <p>Ready to scan: Tap an NFC tag to your device now...</p>
+            <button onclick="stopNFCScan()">Stop Scan</button>
+        </div>
     </div>
 
     <div id="selfEditArea" class="login-box" style="display:none;">
@@ -322,6 +335,7 @@
         let currentUser = null;
         let currentUserData = null;
         let infiniteCreditsActive = false; // Flag to track infinite credits
+        let nfcReader = null; // Variable to hold the NDEFReader instance
 
         // Login function (original, with password check)
         window.checkLogin = function (usernameOverride = null) { // Added usernameOverride parameter
@@ -374,7 +388,6 @@
 
                 document.getElementById("reportForm").style.display = "block";
                 document.getElementById("selfEditArea").style.display = "block";
-                // document.getElementById("shopContainer").style.display = "block"; // REMOVED: This line no longer opens the shop
                 document.getElementById("creditCodeBox").style.display = "block";
                 document.querySelector('.btnshop').style.display = "block"; // Show shop open button
 
@@ -516,6 +529,10 @@
             document.getElementById("quickAccessCodeInput").value = "";
             document.getElementById("quickUserList").style.display = "none";
 
+            // NFC-specific cleanup on logout
+            stopNFCScan(); // Ensure any active NFC scan is stopped
+            document.getElementById("nfcScannerBox").style.display = "none";
+
             alert("You have been logged out.");
         };
 
@@ -601,6 +618,7 @@
             const userRef = ref(database, "users/" + currentUser);
 
             update(userRef, { credits: newCredits }).then(() => {
+                currentUserData.credits = newCredits;
                 currentUserData.credits = newCredits;
                 document.getElementById("infoCredits").textContent = newCredits;
                 alert("Infinite Credits activated for 2.5 seconds!");
@@ -732,6 +750,96 @@
                 alert("An error occurred during redemption. Please try again.");
             }
         };
+
+        // --- NFC Functions ---
+        window.startNFCScan = async function() {
+            if (!('NDEFReader' in window)) {
+                alert("Web NFC is not supported on this device/browser. Please try on a modern Android device with Chrome.");
+                return;
+            }
+
+            if (!currentUser) {
+                alert("Please log in before scanning an NFC code.");
+                return;
+            }
+
+            try {
+                if (nfcReader) { // Stop any existing reader instance
+                    try {
+                        await nfcReader.cancelScan();
+                        console.log("Existing NFC scan cancelled.");
+                    } catch (cancelError) {
+                        console.warn("Error cancelling existing NFC scan:", cancelError);
+                    }
+                }
+
+                nfcReader = new NDEFReader();
+                await nfcReader.scan(); // Start scanning for NFC tags
+
+                document.getElementById("nfcScannerBox").style.display = "block";
+                console.log("Ready to scan: Tap an NFC tag to your device now...");
+
+
+                nfcReader.onreading = async ({ message, serialNumber }) => {
+                    console.log("NFC tag detected. Serial Number:", serialNumber);
+                    let creditCodeFromNFC = null;
+
+                    // Loop through NDEF records to find a text record containing our code
+                    for (const record of message.records) {
+                        if (record.recordType === "text") {
+                            const textDecoder = new TextDecoder(record.encoding);
+                            creditCodeFromNFC = textDecoder.decode(record.data);
+                            console.log(`Credit code found on tag: ${creditCodeFromNFC}`);
+                            break; // Stop after finding the first text record
+                        }
+                    }
+
+                    if (creditCodeFromNFC) {
+                        // Automatically set the input value and attempt to redeem
+                        document.getElementById("redeemCodeInput").value = creditCodeFromNFC;
+                        alert(`NFC Tag Read! Attempting to redeem code: ${creditCodeFromNFC}`);
+                        await redeemCreditCode(); // Call your existing redemption function
+                        stopNFCScan(); // Stop scanning after successful read
+                    } else {
+                        alert("No valid credit code found on this NFC tag. Make sure it's correctly formatted.");
+                    }
+                };
+
+                nfcReader.onreadingerror = (event) => {
+                    console.error("NFC read error:", event);
+                    alert("Error reading NFC tag. Please try again or ensure the tag is valid. Error: " + event.message);
+                    stopNFCScan(); // Stop on error
+                };
+
+            } catch (error) {
+                console.error("Error setting up NFC scan:", error);
+                if (error.name === 'NotAllowedError') {
+                    alert("NFC permission denied. Please allow NFC access in your browser settings.");
+                } else if (error.name === 'SecurityError') {
+                    alert("NFC access requires a secure context (HTTPS) and user gesture. Please ensure your site is on HTTPS.");
+                } else {
+                    alert(`Could not start NFC scan: ${error.message}. Ensure NFC is enabled on your device.`);
+                }
+                stopNFCScan(); // Ensure cleanup if setup fails
+            }
+        };
+
+        window.stopNFCScan = function() {
+            if (nfcReader) {
+                nfcReader.cancelScan().then(() => {
+                    console.log("NFC scan cancelled successfully.");
+                    document.getElementById("nfcScannerBox").style.display = "none";
+                    nfcReader = null; // Clear the instance
+                }).catch(error => {
+                    console.warn("Error cancelling NFC scan:", error);
+                    document.getElementById("nfcScannerBox").style.display = "none";
+                    nfcReader = null; // Still clear instance even if cancel fails
+                });
+            } else {
+                document.getElementById("nfcScannerBox").style.display = "none";
+            }
+        };
     </script>
+    
 </body>
 </html>
