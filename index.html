@@ -797,7 +797,7 @@
         };
 
         // --- QR Code Scanner Functions ---
-        window.startQrCodeScanner = function() {
+       window.startQrCodeScanner = function() {
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("qr-reader");
             }
@@ -816,10 +816,13 @@
                     qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
                 },
                 (decodedText, decodedResult) => {
-                    // console.log(`QR Code detected: ${decodedText}`);
                     if (decodedText) {
+                        
+                        // --- PLAY BEEP SOUND ON SUCCESS ---
+                        playBeep(); 
+                        // --- END OF BEEP CODE ---
+
                         html5QrCode.stop().then(() => {
-                            // console.log("QR Code scanner stopped.");
                             document.getElementById('qr-reader').style.display = 'none';
                             document.getElementById('stopScannerButton').style.display = 'none';
                             window.redeemCreditCode(decodedText); // Redeem the scanned code
@@ -839,6 +842,8 @@
                 document.getElementById('stopScannerButton').style.display = 'none';
             });
         };
+
+        
 
         window.stopQrCodeScanner = function() {
             if (html5QrCode && html5QrCode.isScanning) {
@@ -932,6 +937,34 @@ function promptGiveDaysWithPin() {
 
 // Add this button in your HTML to trigger it:
 
+</script>
+<script>
+    // --- Function to play a beep sound ---
+        function playBeep() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // --- Customize your beep ---
+                oscillator.type = 'sine'; // Type of wave (sine, square, sawtooth, triangle)
+                oscillator.frequency.setValueAtTime(900, audioContext.currentTime); // Frequency in hertz (Hz)
+                gainNode.gain.setValueAtTime(0.9, audioContext.currentTime); // Volume (0 to 1)
+
+                oscillator.start();
+                // Stop the sound after 300 milliseconds
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.error("Could not play beep sound:", e);
+            }
+        }
+
+        // --- QR Code Scanner Functions ---
+        window.startQrCodeScanner = function() {
+            // ... (the rest of your function)
 </script>
 </body>
 </html>
