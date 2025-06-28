@@ -797,69 +797,52 @@
         };
 
         // --- QR Code Scanner Functions ---
-       window.startQrCodeScanner = function() {
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("qr-reader");
-            }
+        window.startQrCodeScanner = function() {
+    if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader");
+    }
 
-            const qrReaderDiv = document.getElementById('qr-reader');
-            qrReaderDiv.style.display = 'block';
-            document.getElementById('startScannerButton').style.display = 'none';
-            document.getElementById('stopScannerButton').style.display = 'block';
-            document.getElementById('redeemCodeInput').style.display = 'block'; // Show manual input as well
-            document.getElementById('redeemManualButton').style.display = 'block';
+    const qrReaderDiv = document.getElementById('qr-reader');
+    qrReaderDiv.style.display = 'block';
+    document.getElementById('startScannerButton').style.display = 'none';
+    document.getElementById('stopScannerButton').style.display = 'block';
+    document.getElementById('redeemCodeInput').style.display = 'block';
+    document.getElementById('redeemManualButton').style.display = 'block';
 
-            html5QrCode.start(
-                { facingMode: "environment" }, // Prefer back camera
-                {
-                    fps: 10,    // frames per second
-                    qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
-                },
-                (decodedText, decodedResult) => {
-                    if (decodedText) {
-                        
-                        // --- PLAY BEEP SOUND ON SUCCESS ---
-                        playBeep(); 
-                        // --- END OF BEEP CODE ---
-
-                        html5QrCode.stop().then(() => {
-                            document.getElementById('qr-reader').style.display = 'none';
-                            document.getElementById('stopScannerButton').style.display = 'none';
-                            window.redeemCreditCode(decodedText); // Redeem the scanned code
-                        }).catch(err => {
-                            console.error("Error stopping scanner:", err);
-                        });
-                    }
-                },
-                (errorMessage) => {
-                    // console.warn(`QR Code scanning error: ${errorMessage}`);
+    html5QrCode.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        },
+        (decodedText, decodedResult) => {
+            if (decodedText) {
+                // Play the beep sound
+                const beepSound = document.getElementById('beepSound');
+                if (beepSound) {
+                    beepSound.play().catch(e => console.error("Error playing sound:", e));
                 }
-            ).catch((err) => {
-                console.error(`Unable to start QR Code scanner: ${err}`);
-                alert("Error starting QR scanner. Please ensure camera access is granted.");
-                document.getElementById('qr-reader').style.display = 'none';
-                document.getElementById('startScannerButton').style.display = 'block';
-                document.getElementById('stopScannerButton').style.display = 'none';
-            });
-        };
 
-        
-
-        window.stopQrCodeScanner = function() {
-            if (html5QrCode && html5QrCode.isScanning) {
                 html5QrCode.stop().then(() => {
-                    // console.log("QR Code scanner stopped.");
                     document.getElementById('qr-reader').style.display = 'none';
-                    document.getElementById('startScannerButton').style.display = 'block';
                     document.getElementById('stopScannerButton').style.display = 'none';
-                    document.getElementById('redeemCodeInput').style.display = 'block';
-                    document.getElementById('redeemManualButton').style.display = 'block';
+                    window.redeemCreditCode(decodedText);
                 }).catch(err => {
                     console.error("Error stopping scanner:", err);
                 });
             }
-        };
-
+        },
+        (errorMessage) => {
+            // console.warn(`QR Code scanning error: ${errorMessage}`);
+        }
+    ).catch((err) => {
+        console.error(`Unable to start QR Code scanner: ${err}`);
+        alert("Error starting QR scanner. Please ensure camera access is granted.");
+        document.getElementById('qr-reader').style.display = 'none';
+        document.getElementById('startScannerButton').style.display = 'block';
+        document.getElementById('stopScannerButton').style.display = 'none';
+    });
+};
     </script>
 
     <script>
@@ -938,33 +921,6 @@ function promptGiveDaysWithPin() {
 // Add this button in your HTML to trigger it:
 
 </script>
-<script>
-    // --- Function to play a beep sound ---
-        function playBeep() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                // --- Customize your beep ---
-                oscillator.type = 'sine'; // Type of wave (sine, square, sawtooth, triangle)
-                oscillator.frequency.setValueAtTime(900, audioContext.currentTime); // Frequency in hertz (Hz)
-                gainNode.gain.setValueAtTime(0.9, audioContext.currentTime); // Volume (0 to 1)
-
-                oscillator.start();
-                // Stop the sound after 300 milliseconds
-                oscillator.stop(audioContext.currentTime + 0.3);
-            } catch (e) {
-                console.error("Could not play beep sound:", e);
-            }
-        }
-
-        // --- QR Code Scanner Functions ---
-        window.startQrCodeScanner = function() {
-            // ... (the rest of your function)
-</script>
+<audio id="beepSound" src="beep-125033.mp3" preload="auto"></audio>
 </body>
 </html>
