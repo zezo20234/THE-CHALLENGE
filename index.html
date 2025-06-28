@@ -246,17 +246,17 @@
     <button class="btnshop" onclick="openShop()" style="display:none;">🛒 Open Shop</button>
     <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <h3>Shop</h3>
-        <button class="btnshop" onclick="buyItem(500, -5)">Buy: 500 credits → -5 days</button><br>
-        <button onclick="buyItem(1000, -15)">Buy: 1000 credits → -15 days</button><br>
-        <button onclick="buyItem(3000, -25)">Buy: 3500 credits → -25 days</button><br>
-        <button onclick="buyItem(4000, -35)">Buy: 4000 credits → -35 days</button><br>
-        <button onclick="buyItem(5000, -45)">Buy: 5000 credits → -45 days</button><br><br>
-        <button onclick="buyItem(6000, -55)">Buy: 6000 credits → -55 days</button><br><br>
-        <button onclick="buyItem(7000, -65)">Buy: 7000 credits → -65 days</button><br><br>
-        <button onclick="buyItem(8000, -75)">Buy: 8000 credits → -75 days</button><br><br>
-        <button onclick="buyItem(9000, -85)">Buy: 9000 credits → -85 days</button><br><br>
-        <button onclick="buyItem(10000, -100)">Buy: 10000 credits → -100 days</button><br><br>
-        <button onclick="buyInfiniteCredits()">Buy: Infinite Credits (2.5s) → 15,000 credits</button><br><br>
+        <button class="btnshop" onclick="buyItem(1000, -5)">Buy: 1000 credits → -5 days</button><br>
+        <button onclick="buyItem(2000, -15)">Buy: 2000 credits → -15 days</button><br>
+        <button onclick="buyItem(4000, -25)">Buy: 4000 credits → -25 days</button><br>
+        <button onclick="buyItem(5000, -35)">Buy: 5000 credits → -35 days</button><br>
+        <button onclick="buyItem(6000, -45)">Buy: 6000 credits → -45 days</button><br><br>
+        <button onclick="buyItem(7000, -55)">Buy: 7000 credits → -55 days</button><br><br>
+        <button onclick="buyItem(8000, -65)">Buy: 8000 credits → -65 days</button><br><br>
+        <button onclick="buyItem(9000, -75)">Buy: 9000 credits → -75 days</button><br><br>
+        <button onclick="buyItem(10000, -85)">Buy: 10000 credits → -85 days</button><br><br>
+        <button onclick="buyItem(11000, -100)">Buy: 11000 credits → -100 days</button><br><br>
+        <button onclick="buyInfiniteCredits()">Buy: Infinite Credits (2.5s) → 16,000 credits</button><br><br>
         <button onclick="closeShop()">Close Shop</button>
     </div>
 
@@ -645,7 +645,7 @@
         };
 
         window.buyInfiniteCredits = function() {
-            const creditsCost = 15000;
+            const creditsCost = 16000;
             if (!currentUserData) {
                 alert("You must be logged in to buy this.");
                 return;
@@ -798,51 +798,63 @@
 
         // --- QR Code Scanner Functions ---
         window.startQrCodeScanner = function() {
-    if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("qr-reader");
-    }
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
 
-    const qrReaderDiv = document.getElementById('qr-reader');
-    qrReaderDiv.style.display = 'block';
-    document.getElementById('startScannerButton').style.display = 'none';
-    document.getElementById('stopScannerButton').style.display = 'block';
-    document.getElementById('redeemCodeInput').style.display = 'block';
-    document.getElementById('redeemManualButton').style.display = 'block';
+            const qrReaderDiv = document.getElementById('qr-reader');
+            qrReaderDiv.style.display = 'block';
+            document.getElementById('startScannerButton').style.display = 'none';
+            document.getElementById('stopScannerButton').style.display = 'block';
+            document.getElementById('redeemCodeInput').style.display = 'block'; // Show manual input as well
+            document.getElementById('redeemManualButton').style.display = 'block';
 
-    html5QrCode.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-        },
-        (decodedText, decodedResult) => {
-            if (decodedText) {
-                // Play the beep sound
-                const beepSound = document.getElementById('beepSound');
-                if (beepSound) {
-                    beepSound.play().catch(e => console.error("Error playing sound:", e));
+            html5QrCode.start(
+                { facingMode: "environment" }, // Prefer back camera
+                {
+                    fps: 10,    // frames per second
+                    qrbox: { width: 250, height: 250 }  // confine QR box to 250x250
+                },
+                (decodedText, decodedResult) => {
+                    // console.log(`QR Code detected: ${decodedText}`);
+                    if (decodedText) {
+                        html5QrCode.stop().then(() => {
+                            // console.log("QR Code scanner stopped.");
+                            document.getElementById('qr-reader').style.display = 'none';
+                            document.getElementById('stopScannerButton').style.display = 'none';
+                            window.redeemCreditCode(decodedText); // Redeem the scanned code
+                        }).catch(err => {
+                            console.error("Error stopping scanner:", err);
+                        });
+                    }
+                },
+                (errorMessage) => {
+                    // console.warn(`QR Code scanning error: ${errorMessage}`);
                 }
+            ).catch((err) => {
+                console.error(`Unable to start QR Code scanner: ${err}`);
+                alert("Error starting QR scanner. Please ensure camera access is granted.");
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('startScannerButton').style.display = 'block';
+                document.getElementById('stopScannerButton').style.display = 'none';
+            });
+        };
 
+        window.stopQrCodeScanner = function() {
+            if (html5QrCode && html5QrCode.isScanning) {
                 html5QrCode.stop().then(() => {
+                    // console.log("QR Code scanner stopped.");
                     document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('startScannerButton').style.display = 'block';
                     document.getElementById('stopScannerButton').style.display = 'none';
-                    window.redeemCreditCode(decodedText);
+                    document.getElementById('redeemCodeInput').style.display = 'block';
+                    document.getElementById('redeemManualButton').style.display = 'block';
                 }).catch(err => {
                     console.error("Error stopping scanner:", err);
                 });
             }
-        },
-        (errorMessage) => {
-            // console.warn(`QR Code scanning error: ${errorMessage}`);
-        }
-    ).catch((err) => {
-        console.error(`Unable to start QR Code scanner: ${err}`);
-        alert("Error starting QR scanner. Please ensure camera access is granted.");
-        document.getElementById('qr-reader').style.display = 'none';
-        document.getElementById('startScannerButton').style.display = 'block';
-        document.getElementById('stopScannerButton').style.display = 'none';
-    });
-};
+        };
+
     </script>
 
     <script>
@@ -921,6 +933,5 @@ function promptGiveDaysWithPin() {
 // Add this button in your HTML to trigger it:
 
 </script>
-<audio id="beepSound" src="beep-125033.mp3" preload="auto"></audio>
 </body>
 </html>
