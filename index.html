@@ -968,5 +968,84 @@ function openRules() {
 
 <!-- ✅ Beep Sound -->
 <audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+<script>
+  // ✅ Wait for the page to fully load
+  window.onload = function () {
+    const onlineStatus = document.getElementById('onlineStatus');
+    const radarButton = document.getElementById('radarButton');
+    const radarContainer = document.getElementById('radarContainer');
+    const userSpan = document.getElementById('userWelcome');
+
+    let username = userSpan ? userSpan.innerText.trim() : "Guest";
+
+    // ✅ If username exists, show Online and Radar Button
+    if (username && username !== "") {
+      onlineStatus.style.display = 'block';
+      radarButton.style.display = 'block';
+    }
+
+    // ✅ When Radar button clicked, show Radar and start it
+    radarButton.onclick = function () {
+      radarContainer.style.display = 'block';
+      radarButton.disabled = true;
+      startRadar(username);
+    };
+  };
+
+  function startRadar(username) {
+    const canvas = document.getElementById('radar');
+    const ctx = canvas.getContext('2d');
+    const beep = document.getElementById('beepSound');
+
+    let sweepAngle = 0;
+    let lastBeepTime = 0;
+
+    function drawRadar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw green circle
+      ctx.strokeStyle = '#0f0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(200, 200, 180, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Draw sweeping line
+      ctx.save();
+      ctx.translate(200, 200);
+      ctx.rotate(sweepAngle);
+      ctx.strokeStyle = '#0f0';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -180);
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw user as cyan dot
+      ctx.fillStyle = 'cyan';
+      ctx.beginPath();
+      ctx.arc(200, 100, 6, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Draw username, speed, altitude (static demo for now)
+      ctx.fillStyle = '#0f0';
+      ctx.font = '14px Arial';
+      ctx.fillText(`${username}`, 160, 90);
+      ctx.fillText(`Speed: 0 km/h`, 150, 110);
+      ctx.fillText(`Altitude: 0 m`, 145, 130);
+
+      // Rotate
+      sweepAngle += 0.05;
+      if (sweepAngle > 2 * Math.PI) {
+        sweepAngle = 0;
+        beep.play();
+      }
+
+      requestAnimationFrame(drawRadar);
+    }
+
+    drawRadar();
+  }
+</script>
 </body>
 </html>
