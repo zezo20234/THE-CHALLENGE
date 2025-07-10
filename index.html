@@ -198,6 +198,46 @@
         #startScannerButton, #stopScannerButton {
             margin-top: 10px;
         }
+        /* Online Green Light (top right) */
+#onlineStatus {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 255, 0, 0.2);
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid #0f0;
+  font-weight: bold;
+  color: #0f0;
+  display: none;
+  z-index: 9999;
+}
+
+/* Radar Button Style (bottom button) */
+#radarButton {
+  width: fit-content;
+  margin: 50px auto 0 auto;
+  padding: 12px 30px;
+  border-radius: 50px;
+  border: 2px solid blue;
+  background: rgba(255, 255, 255, 0.2);
+  color: blue;
+  display: none;
+}
+
+#radarButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+/* Radar Canvas Style */
+#radarContainer canvas {
+  background: black;
+  border: 2px solid #0f0;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+}
     </style>
 </head>
 <body>
