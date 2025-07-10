@@ -1,99 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+Head <!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>THE CHALLENGE</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CHALLENGE</title>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="modern.jpg" />
-  <link rel="icon" type="image/png" sizes="192x192" href="modern.jpg" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
-  <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" sizes="180x180" href="modern.jpg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="modern.jpg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: url('modern.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: blue;
-    }
+    <style>
+        /* Base text color for the entire body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url('modern.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        /* Specific elements and containers that hold text */
+        .login-box, form, #selfEditArea, #selfEditor, #accessCodeContainer, #creditCodeBox, footer, #shopContainer, #welcomeBox {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(100px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        /* Inputs, buttons, selects, and text areas */
+        input, button, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE, including placeholder text */
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+        /* Placeholder text color for inputs and textareas */
+        input::placeholder, textarea::placeholder {
+            color: blue; /* Ensures placeholder text is also blue */
+            opacity: 0.7; /* Adjust opacity if needed for readability */
+        }
+        /* Hover state for buttons */
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+            cursor: pointer;
+        }
+        /* Labels for form elements */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        /* Info box in the top left */
+        #infoBox {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: none;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+            z-index: 9999; /* HIGHEST Z-INDEX */
+        }
+        /* Shop button */
+        .btnshop {
+            width: fit-content;
+            margin: auto;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        /* Login lock icon animation */
+        #loginLockIcon svg {
+            overflow: visible;
+        }
+        @keyframes lockOpen {
+            0% {
+                transform: rotate(0deg);
+                transform-origin: 50% 75%;
+            }
+            100% {
+                transform: rotate(-45deg);
+            }
+        }
+        #loginLockIcon.open #lockShackle {
+            animation: lockOpen 0.1s forwards ease-in-out;
+            stroke: blue; /* Changed from limegreen to blue - this is a stroke, not text */
+        }
+        /* Fade-in and drop-in animations */
+        .fade-in {
+            animation: fadeInEffect 0.1s ease forwards;
+        }
+        @keyframes fadeInEffect {
+            from {
+                opacity: 5;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            animation: dropIn 0.6s ease forwards;
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        @keyframes dropIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* User list for quick access */
+        .user-list {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .user {
+            cursor: pointer;
+            margin: 10px;
+            padding: 12px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            border-radius: 50px;
+            background: blue; /* Background of the user buttons */
+            color: blue; /* ALL TEXT COLOR SET TO BLUE - Note: Text on a blue background will be hard to read. You might want to change the background to a lighter color for contrast. */
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .user:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        /* QR code container */
+        #qrcodeContainer {
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9); /* White background for QR code */
+            padding: 10px;
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+        }
+        #qrcodeContainer img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
 
-    /* Box styles (keep your existing ones) */
-    .login-box, form, #welcomeBox {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(100px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      color: blue;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 50px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.2);
-      color: blue;
-      font-size: 16px;
-      backdrop-filter: blur(10px);
-      box-sizing: border-box;
-    }
-
-    button:hover {
-      background: rgba(255, 255, 255, 0.3);
-      color: blue;
-      cursor: pointer;
-    }
-
-    /* ONLINE light (top right) */
-    #onlineStatus {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 255, 0, 0.2);
-      padding: 8px 15px;
-      border-radius: 20px;
-      border: 1px solid #0f0;
-      font-weight: bold;
-      color: #0f0;
-      display: none;
-      z-index: 9999;
-    }
-
-    /* Radar button style (bottom button) */
-    #radarButton {
-      width: fit-content;
-      margin: 50px auto 0 auto;
-      padding: 12px 30px;
-      border-radius: 50px;
-      border: 2px solid blue;
-      background: rgba(255, 255, 255, 0.2);
-      color: blue;
-      display: none;
-    }
-
-    #radarButton:hover {
-      background: rgba(255, 255, 255, 0.3);
-      cursor: pointer;
-    }
-
-    /* Radar canvas design */
-    #radarContainer canvas {
-      background: black;
-      border: 2px solid #0f0;
-      border-radius: 50%;
-      display: block;
-      margin: 0 auto;
-    }
-  </style>
+        /* QR Code Scanner */
+        #qr-reader {
+            width: 100%;
+            max-width: 300px; /* Limit scanner size */
+            margin: 10px auto;
+            border-radius: 10px;
+            overflow: hidden; /* Ensures video fits rounded corners */
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default */
+        }
+        #qr-reader__dashboard {
+            background: rgba(255, 255, 255, 0.1);
+            color: blue; /* ALL TEXT COLOR SET TO BLUE */
+            padding: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        #qr-reader video {
+            width: 100% !important;
+            height: auto !important;
+        }
+        #startScannerButton, #stopScannerButton {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
