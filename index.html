@@ -950,5 +950,23 @@ function openRules() {
 
 </script>
 <button onclick="openMoreOptions()" style="display:none; margin: 10px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);" id="openMoreButton">Open More</button>
+<!-- ✅ Online Green Light (top right) -->
+<div id="onlineStatus">● Online</div>
+
+<!-- ✅ Your existing Welcome Box (keep this unchanged) -->
+<div id="welcomeBox" style="display:none; text-align:center; margin-top:20px;">
+  <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
+</div>
+
+<!-- ✅ Radar Button (bottom of page) -->
+<button id="radarButton">Open Radar</button>
+
+<!-- ✅ Radar Canvas (hidden until clicked) -->
+<div id="radarContainer" style="display:none; margin-top:30px;">
+  <canvas id="radar" width="400" height="400"></canvas>
+</div>
+
+<!-- ✅ Beep Sound -->
+<audio id="beepSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 </body>
 </html>
