@@ -910,5 +910,108 @@ function openRules() {
 
 </script>
 <button onclick="openMoreOptions()" style="display:none; margin: 10px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);" id="openMoreButton">Open More</button>
+<button id="openRadarButton" style="
+    margin: 20px auto;
+    display: block;
+    max-width: 400px;
+    padding: 12px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.1);
+    color: blue;
+    border: 1px solid rgba(255,255,255,0.3);">
+  📡 Open Radar
+</button>
+
+<div id="radarContainer" style="display:none; margin-top:20px;">
+  <canvas id="radarCanvas" width="500" height="500" style="background:black; display:block; margin:auto;"></canvas>
+  <audio id="beepSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+  <div id="lookingAt" style="margin-top:10px;"> </div>
+</div>
+<script>
+document.getElementById('openRadarButton').addEventListener('click', () => {
+  document.getElementById('radarContainer').style.display = 'block';
+  startRadar();
+});
+
+function startRadar() {
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+  const center = canvas.width / 2;
+  const radius = center - 10;
+  let angle = 0;
+  const sweepSpeed = 0.02;
+
+  // Example user data
+  let userDots = [
+    {id: 1, x: 0.5, y: -0.3, color: 'green', speed: 120, altitude: 3000},
+    {id: 2, x: -0.6, y: 0.4, color: 'green', speed: 80, altitude: 1500},
+    {id: 'me', x: -0.2, y: 0.1, color: 'cyan', speed: 0, altitude: 0}
+  ];
+
+  function drawRadar() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw circles
+    ctx.strokeStyle = 'green';
+    for (let i = 1; i <= 4; i++) {
+      ctx.beginPath();
+      ctx.arc(center, center, radius * i / 4, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+
+    // Draw sweep arm
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.lineTo(center + radius * Math.cos(angle), center + radius * Math.sin(angle));
+    ctx.stroke();
+
+    let lookingAtText = '';
+
+    userDots.forEach(dot => {
+      let dotX = center + dot.x * radius;
+      let dotY = center + dot.y * radius;
+
+      // Compute dot angle
+      let dotAngle = Math.atan2(dot.y, dot.x);
+      if (dotAngle < 0) dotAngle += 2 * Math.PI;
+
+      // If sweep is near dot angle
+      let diff = Math.abs(angle - dotAngle);
+      if (diff > Math.PI) diff = 2 * Math.PI - diff;
+      if (diff < 0.1) {
+        lookingAtText = (dot.id === 'me') ? 'Looking at: YOU' : `Looking at: User #${dot.id}`;
+        ctx.fillStyle = 'yellow'; // highlight when looking
+      } else {
+        ctx.fillStyle = dot.color;
+      }
+
+      // Draw dot
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 6, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Draw speed & altitude
+      ctx.fillStyle = 'white';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`${dot.speed} km/h`, dotX + 8, dotY);
+      ctx.fillText(`${dot.altitude} m`, dotX + 8, dotY + 12);
+    });
+
+    document.getElementById('lookingAt').innerText = lookingAtText;
+  }
+
+  function animate() {
+    angle += sweepSpeed;
+    if (angle >= 2 * Math.PI) {
+      angle = 0;
+      document.getElementById('beepSound').play();
+    }
+    drawRadar();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+</script>
 </body>
 </html>
