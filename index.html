@@ -78,6 +78,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: none;
             color: blue; /* ALL TEXT COLOR SET TO BLUE */
+            z-index: 9999; /* HIGHEST Z-INDEX */
         }
         /* Shop button */
         .btnshop {
@@ -202,7 +203,10 @@
 <body>
 
     <div id="infoBox">
-        Credits: <span id="infoCredits">0</span> | Days: <span id="infoDays">0</span>
+        <div>Credits: <span id="infoCredits">0</span></div>
+        <div>Days: <span id="infoDays">0</span></div>
+        <div>Version: <span id="infoVersion">45</span></div>
+        <div id="infoChallenge">Challenge: No challenge set.</div>
     </div>
     <button id="logoutButton" onclick="logout()" style="display:none; margin: 20px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);">Log Out</button>
 
@@ -244,6 +248,9 @@
         <h1><span id="welcomeMessage"></span><span id="userWelcome"></span>!</h1>
     </div>
     <button class="btnshop" onclick="openShop()" style="display:none;">🛒 Open Shop</button>
+    <button onclick="openRules()" style="display:none; margin: 10px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);" id="rulesButton">Rules</button>
+
+
     <div id="shopContainer" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <h3>Shop</h3>
         <button class="btnshop" onclick="buyItem(1000, -5)">Buy: 1000 credits → -5 days</button><br>
@@ -308,8 +315,6 @@
         <div id="qr-reader"></div> <input type="text" id="redeemCodeInput" placeholder="Or enter code manually" style="display:none;"/>
         <button onclick="redeemCreditCode()" style="display:none;" id="redeemManualButton">Redeem Code</button>
     </div>
-
-     <button onclick="promptGiveDaysWithPin()">Give Days to User with PIN</button>
 
     <div id="selfEditArea" class="login-box" style="display:none;">
         <h3>🔒 Enter Secret Code</h3>
@@ -418,9 +423,9 @@
                 animateWelcomeText(currentUser);
 
                 document.getElementById("reportForm").style.display = "block";
-                document.getElementById("selfEditArea").style.display = "block";
-                document.getElementById("creditCodeBox").style.display = "block";
                 document.querySelector('.btnshop').style.display = "block"; // Show shop open button
+                document.getElementById("rulesButton").style.display = "block"; // Show rules button
+                document.getElementById("openMoreButton").style.display = "block"; // Show open more button
 
                 document.getElementById("infoCredits").textContent = currentUserData.credits ?? 0;
                 document.getElementById("infoDays").textContent = currentUserData.days ?? 0;
@@ -485,10 +490,10 @@
         // Listen to challenge updates to update footer live
         onValue(ref(database, 'global/challenge'), snapshot => {
             const val = snapshot.exists() ? snapshot.val() : "No challenge set.";
-            // Check if the element exists before setting its content
-            const footerChallenge = document.getElementById("footerChallenge");
-            if (footerChallenge) {
-                footerChallenge.textContent = val;
+            // Check if the infoChallenge element exists before setting its content
+            const infoChallenge = document.getElementById("infoChallenge");
+            if (infoChallenge) {
+                infoChallenge.textContent = "Challenge: " + val;
             }
         });
 
@@ -549,13 +554,15 @@
             document.getElementById("loginBox").style.display = "block";
             document.getElementById("welcomeBox").style.display = "none";
             document.getElementById("reportForm").style.display = "none";
-            document.getElementById("selfEditArea").style.display = "none";
+            document.getElementById("selfEditArea").style.display = "none"; // Hide on logout
             document.getElementById("selfEditor").style.display = "none";
             document.getElementById("infoBox").style.display = "none";
             document.getElementById("logoutButton").style.display = "none";
             document.getElementById("shopContainer").style.display = "none"; // Keep shop hidden on logout
-            document.getElementById("creditCodeBox").style.display = "none";
+            document.getElementById("creditCodeBox").style.display = "none"; // Hide on logout
             document.querySelector('.btnshop').style.display = "none"; // Hide shop open button
+            document.getElementById("rulesButton").style.display = "none"; // Hide rules button
+            document.getElementById("openMoreButton").style.display = "none"; // Hide open more button
 
             document.getElementById("quickAccessCodeInput").value = "";
             document.getElementById("quickUserList").style.display = "none";
@@ -584,6 +591,12 @@
 
         window.closeShop = function () {
             document.getElementById("shopContainer").style.display = "none";
+        };
+
+        // NEW function for "Open More" button
+        window.openMoreOptions = function() {
+            document.getElementById("creditCodeBox").style.display = "block";
+            document.getElementById("selfEditArea").style.display = "block";
         };
 
         window.buyItem = function (creditsCost, daysChange) {
@@ -654,7 +667,7 @@
             if (currentUserData.credits < creditsCost) {
                 alert("You need " + creditsCost + " credits to buy Infinite Credits!");
                 return;
-            }
+                }
 
             const newCredits = currentUserData.credits - creditsCost;
             const userRef = ref(database, "users/" + currentUser);
@@ -858,8 +871,6 @@
     </script>
 
     <script>
-// Existing code ...
-
 // Function to decrease days by 1 at midnight if user has days > 0
 function setupDailyDaysDecrement() {
   const now = new Date();
@@ -889,49 +900,15 @@ function decrementDays() {
 }
 
 // Call this function after login and data loaded
-// Example: inside showWelcome() or after currentUserData is set
 setupDailyDaysDecrement();
 </script>
 <script>
-// Function to prompt PIN and give days to a selected user
-function promptGiveDaysWithPin() {
-  const pin = prompt("Enter PIN to give days:");
-  if (pin === "7") {
-    const targetUser = prompt("Enter user to give days to (layan / asser):").toLowerCase();
-    if (targetUser !== "layan" && targetUser !== "asser") {
-      alert("Invalid user.");
-      return;
-    }
-    const daysToAdd = parseInt(prompt("Enter number of days to add to " + targetUser + ":"), 10);
-    if (!isNaN(daysToAdd) && daysToAdd > 0) {
-      const userRef = ref(database, 'users/' + targetUser);
-
-      // Get current days and add
-      get(userRef).then(snapshot => {
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          const newDays = (userData.days ?? 0) + daysToAdd;
-          update(userRef, { days: newDays }).then(() => {
-            alert("Days added successfully to " + targetUser);
-          }).catch(err => {
-            alert("Error updating days: " + err);
-          });
-        } else {
-          alert("Target user not found in database.");
-        }
-      }).catch(err => {
-        alert("Error reading user data: " + err);
-      });
-    } else {
-      alert("Invalid number of days.");
-    }
-  } else {
-    alert("Incorrect PIN.");
-  }
+// Function to open the rules page
+function openRules() {
+  window.open('rules.html', '_blank'); // Opens 'rules.html' in a new tab/window
 }
 
-// Add this button in your HTML to trigger it:
-
 </script>
+<button onclick="openMoreOptions()" style="display:none; margin: 10px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);" id="openMoreButton">Open More</button>
 </body>
 </html>
