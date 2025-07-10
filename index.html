@@ -912,3 +912,57 @@ function openRules() {
 <button onclick="openMoreOptions()" style="display:none; margin: 10px auto; display: block; max-width: 400px; padding: 12px; border-radius: 30px; background: rgba(255,255,255,0.1); color: blue; border: 1px solid rgba(255,255,255,0.3);" id="openMoreButton">Open More</button>
 </body>
 </html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>THE CHALLENGE</title>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="modern.jpg" />
+  <link rel="icon" type="image/png" sizes="192x192" href="modern.jpg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="THE CHALLENGE" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: url('modern.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: blue;
+    }
+
+    /* Online Green Light Top Right */
+    #onlineStatus {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 255, 0, 0.2);
+      padding: 8px 15px;
+      border-radius: 20px;
+      border: 1px solid #0f0;
+      font-weight: bold;
+      color: #0f0;
+      display: none;
+      z-index: 9999;
+    }
+
+    /* Radar Button Style */
+    #radarButton {
+      width: fit-content;
+      margin: 50px auto 0 auto;
+      padding: 12px 30px;
+      border-radius: 50px;
+      border: 2px solid blue;
+      background: rgba(255, 255, 255, 0.2);
+      color: blue;
+      display: none;
+    }
+
+    #radarButton:hover {
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+    }
+  </style>
+</head>
